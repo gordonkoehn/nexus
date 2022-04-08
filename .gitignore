@@ -1,0 +1,11 @@
+
+*.o
+*.yml
+tools/spycon/.renku/refs/datasets/
+tools/spycon/data/
+
+tools/spycon/.renku/refs/.DS_Store
+tools/spycon/.DS_Store
+tools/spycon/.dockerignore
+.DS_Store
+tools/spycon/src/idtxl/test/data/
