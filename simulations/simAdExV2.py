@@ -88,7 +88,7 @@ def simpleNetV2(n,p,c,t,ws,tauw,a,b,Vr): # n = no neurons, p = probablitiy of co
     S = Synapses(G, G,'ws : volt', on_pre='v_post += ws')
     S.connect(condition = c, p=p)
     S.ws = ws # voltage suppiled by a synaptic connection
-    #S.delay = 'j*0.2*ms'
+    S.delay = '0.2*ms'
     
     
     # (3) ===========================Set up Recorders===================================
