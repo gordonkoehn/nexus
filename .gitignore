@@ -16,3 +16,4 @@ tools/spycon/src/idtxl/test/data/
 simulations/__pycache__/simAdExV2.cpython-39.pyc
 simulations/__pycache__/simAdExV2.cpython-39.pyc
 conInf/.ipynb_checkpoints/conInf_V2_week07-checkpoint.ipynb
+*.bak

@@ -52,8 +52,6 @@ def simpleNetV2(n,p,c,t,ws,tauw,a,b,Vr): # n = no neurons, p = probablitiy of co
         records spike-times and ids
     S : Synapses
         holds true network definition  
-    G :  Group of Neurons
-        holds neuron group definition
     
     """    
     start_scope()
@@ -107,4 +105,4 @@ def simpleNetV2(n,p,c,t,ws,tauw,a,b,Vr): # n = no neurons, p = probablitiy of co
     
     return trace, spikes, S
     
-    
+   
