@@ -312,7 +312,9 @@ def run_sim(params):
     
     result['params'] = params
     
-    
+    result['NE'] = NE
+    result['NI'] =  NI
+    result['sim_time'] = t_simulation
 
 
     
