@@ -13,7 +13,15 @@ import math
 
 def getFreq(path):
     
-    result = np.load('simData/100/'+ save_name, allow_pickle=True)
+    root_dir = 'simData'
+
+    curr_dir = root_dir + '/' 
+    curr_dir += 'N_' +str(params['N']) + '/'  
+    curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
+
+
+    
+    result = np.load(curr_dir + '/' + save_name, allow_pickle=True)
     result = result.tolist() # convert from array back to dictionary
 
     index, counts = np.unique( result['ex_idx'], return_counts=True)
@@ -44,9 +52,13 @@ def getFreq(path):
 
 def getFilename(params):
     
-    save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']), str(params['ge']), str(params['gi']) + ".npy"])
-  
+    save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']) ]) + '_'
+    save_name += '_'.join([str(params['ge']), str(params['gi']),  str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
+    save_name += ".npy"
+
+    
     return save_name
+
 
 
 if __name__ == '__main__':
@@ -57,6 +69,12 @@ if __name__ == '__main__':
     params['a'] = float(1)
     params['b'] = float(5)
     params['N'] = int(100)
+    
+    #connection probabilities
+    params['prob_Pee'] = float(0.02)
+    params['prob_Pei'] = float(0.02)
+    params['prob_Pii'] = float(0.02)
+    params['prob_Pie'] = float(0.02)
     #params['ge']=float(0)
     #params['gi']=float(0)
     

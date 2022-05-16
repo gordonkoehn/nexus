@@ -4,6 +4,8 @@
 Created on Thu Mar  3 19:53:10 2022
 
 @author: th
+
+
 """
 import os
 import sys
@@ -29,37 +31,50 @@ Alain Destexhe 2009. "Self-sustained asynchronous irregular states and Up–Down
 
 
 
-#parser = argparse.ArgumentParser()
-#parser.add_argument("sim_time") # in seconds
-#parser.add_argument("N")
-#parser.add_argument("a")
-#parser.add_argument("b")
-#parser.add_argument("ge")
-#parser.add_argument("gi")
-# parser.add_argument("degree")
+parser = argparse.ArgumentParser()
+parser.add_argument("sim_time") # in seconds
+parser.add_argument("N")
+parser.add_argument("a")
+parser.add_argument("b")
+parser.add_argument("ge")
+parser.add_argument("gi")
+parser.add_argument("prob_Pee")
+parser.add_argument("prob_Pei")
+parser.add_argument("prob_Pii")
+parser.add_argument("prob_Pie")
+#parser.add_argument("degree")
 
-#args=parser.parse_args()
-
-
-#params = dict()
-#params['sim_time'] = float(args.sim_time)
-#params['a'] = float(args.a)
-#params['b'] = float(args.b)
-#params['N'] = int(args.N)
-#params['ge']=float(args.ge)
-#params['gi']=float(args.gi)
+args=parser.parse_args()
 
 
+params = dict()
+params['sim_time'] = float(args.sim_time)
+params['a'] = float(args.a)
+params['b'] = float(args.b)
+params['N'] = int(args.N)
+#conductances
+params['ge']=float(args.ge)
+params['gi']=float(args.gi)
+#connection probabilities
+params['prob_Pee'] = float(args.prob_Pee)
+params['prob_Pei'] = float(args.prob_Pei)
+params['prob_Pii'] = float(args.prob_Pii)
+params['prob_Pie'] = float(args.prob_Pie)
 
-#root_dir = 'simData'
-
-#curr_dir = root_dir + '/' + str(params['N'])
-
-#if(not(os.path.exists(curr_dir))):
-#    os.makedirs(curr_dir)
 
 
-#params['save_fol'] = curr_dir
+root_dir = 'simData'
+
+curr_dir = root_dir + '/' 
+curr_dir += 'N_' +str(params['N']) + '/'  
+curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
+
+                                      
+if(not(os.path.exists(curr_dir))):
+    os.makedirs(curr_dir)
+
+
+params['save_fol'] = curr_dir
 
 
 
@@ -85,11 +100,11 @@ def run_sim(params):
     
     #-----------------------------
     
-    prob_Pee=0.02 #(RS->RS)
-    prob_Pei=0.02 #(RS->FS)
     
-    prob_Pii=0.02 #(FS->FS)
-    prob_Pie=0.02 #(FS->RS)
+    prob_Pee = params['prob_Pee'] #(RS->RS) NB: originally all were p=0.02
+    prob_Pei = params['prob_Pei'] #(RS->FS)
+    prob_Pii = params['prob_Pii'] #(FS->FS)
+    prob_Pie = params['prob_Pie'] #(FS->RS)
     
     
     # prob_p=0.02 #External, not used now external drive (kick-off drive) uses the same connection probability as above.
@@ -322,7 +337,8 @@ def run_sim(params):
         os.makedirs(params['save_fol'])
         
     save_fol = params['save_fol']
-    save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']), str(params['ge']), str(params['gi'])])
+    save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']) ]) + '_'
+    save_name += '_'.join([str(params['ge']), str(params['gi']),  str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
     result['save_name']= save_name
     np.save(save_fol + '/' + save_name, result)
 
