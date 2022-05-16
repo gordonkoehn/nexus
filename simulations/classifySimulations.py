@@ -12,6 +12,23 @@ import math
 
 
 def getFreq(path):
+    """
+    Get mean firing frequencies of a given file behin the given path
+    
+    Parameters
+    ----------
+    path : str
+        path to .npy simulation file
+    
+    
+    Returns
+    -------
+    rates_Hz_ex : np.array
+        frequencies in Hz of spikes per excitatory neuron
+    rates_Hz_in : np.array
+        frequencies in Hz of spikes per inhibitory neuron
+    
+    """    
     
     root_dir = 'simData'
 
@@ -20,7 +37,6 @@ def getFreq(path):
     curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
 
 
-    
     result = np.load(curr_dir + '/' + save_name, allow_pickle=True)
     result = result.tolist() # convert from array back to dictionary
 
@@ -33,8 +49,6 @@ def getFreq(path):
     
     
     #fig7, ax7 = plt.subplots()
-
- 
     #green_diamond = dict(markerfacecolor='g', marker='D')
     #data = [rates_Hz_ex, rates_Hz_in]
     #ax7.set_title('Mean Firing Frequency')
@@ -45,25 +59,66 @@ def getFreq(path):
     #ax7.grid()
     #fig7.show()
     
-
     return rates_Hz_ex, rates_Hz_in
 
 
 
+def getPath(params):
+    """
+    Get path to file given the parameters of the simulation
+    
+    Parameters
+    ----------
+    params : dict
+       see definition in wp2_adex_model_script
+        
+        
+    Returns
+    -------
+    curr_dir : str
+        path to .npy simulation file
+    
+    """   
+    
+    root_dir = 'simData'
+
+    curr_dir = root_dir + '/' 
+    curr_dir += 'N_' +str(params['N']) + '/'  
+    curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
+    
+    return curr_dir
+
+
 def getFilename(params):
+    """
+    Get filename given the parameters of the simulation
+    
+    Parameters
+    ----------
+    params : dict
+       see definition in wp2_adex_model_script
+        
+        
+    Returns
+    -------
+    save_name : str
+        name of simulation file
+    
+    """   
     
     save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']) ]) + '_'
     save_name += '_'.join([str(params['ge']), str(params['gi']),  str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
     save_name += ".npy"
 
-    
     return save_name
 
 
 
 if __name__ == '__main__':
     
-    # specify simulation parameters
+    
+    ######################################################
+    ########### specify simulation parameters ############
     params = dict()
     params['sim_time'] = float(10)
     params['a'] = float(1)
@@ -87,7 +142,10 @@ if __name__ == '__main__':
     
     step = 5
     
+    #######################################################
     
+    
+    ############## loop through all files ################
     ges = []
     gis = []
     m_freqs_ex = []
@@ -100,7 +158,9 @@ if __name__ == '__main__':
     
             save_name = getFilename(params)
     
-            rates_Hz_ex, rates_Hz_in = getFreq("save_name")
+            curr_dir = getPath(params)
+        
+            rates_Hz_ex, rates_Hz_in = getFreq(curr_dir)
     
             m_rates_Hz_ex = np.mean(rates_Hz_ex)
             m_rates_Hz_in = np.mean(rates_Hz_in)
@@ -118,8 +178,16 @@ if __name__ == '__main__':
     condFreqSpace['m_freq_ex'] = [0 if x != x else x for x in m_freqs_ex] 
     condFreqSpace['m_freq_in'] = [0 if x != x else x for x in m_freqs_in] 
     
-    print(condFreqSpace)
+    #######################################################
     
+    
+    
+    ################# Make Figures #######################
+    
+    
+    ########## mean firing frequencies
+    
+    ##### make excitatory
     
     # Creating figure
     fig = plt.figure(figsize = (10, 7))
@@ -135,6 +203,8 @@ if __name__ == '__main__':
  
     # show plot
     plt.show()
+    
+    #### make inhibitory 
     
     # Creating figure
     fig = plt.figure(figsize = (10, 7))
