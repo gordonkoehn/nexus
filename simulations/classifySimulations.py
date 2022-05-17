@@ -10,6 +10,10 @@ import sys
 import matplotlib.pyplot as plt
 import math
 from elephant.statistics import cv, isi
+import elephant
+import neo
+import quantities
+from elephant.conversion import BinnedSpikeTrain
 
 
 def getFreq(result):
@@ -119,6 +123,104 @@ def getResult(curr_dir, save_name):
     result = result.tolist() # convert from array back to dictionary
     return result
     
+def getCVs(result):
+    """
+    Get the coefficients of variation / standrad errors for all spike trains  / neurons.
+    
+    Parameters
+    ----------
+    result : dict
+       see wp2_adex_model_script.py
+          
+        
+    Returns
+    -------
+    cvs : list
+        coefficients of variation of all spike trains
+    
+    """  
+    ##### Unpack data ###########
+    # unpack spikes
+    times=np.append( result['in_time'],  result['ex_time']) # [s]
+    ids=np.append(result['in_idx'],  result['ex_idx'])  
+    
+    # get neuron IDs - persume they jsut iterate upwards
+    N = result['NE'] + result['NI']
+    nodes=np.arange(0, N, 1)
+    
+    #results list of coefficients of variation
+    cvs = []
+    
+    # iterate through all neurons
+    for node in nodes:
+        t_start = 0
+        t_stop =  result['sim_time']
+        times1 = times[ids == node] / 1000 # in s
+        neo_spk_train = neo.SpikeTrain(times1, units=quantities.second, t_start=t_start, t_stop=t_stop)
+        #aclaulate and append coefficent of variation
+        cvs.append(cv(isi(neo_spk_train)))
+    
+    return cvs
+
+def computePariwiseCorr(binned_spiketrains):
+    """
+    Calculate the NxN matrix of pairwise Pearson’s correlation coefficients between all combinations of N binned spike trains.
+    
+    Parameters
+    ----------
+    trains : list 
+        of binned_spiketrain      
+        
+    Returns
+    -------
+    cc_matrix : (N, N) np.ndarray
+        The square matrix of correlation coefficients.
+    """  
+    cc_matrix =  elephant.spike_train_correlation.correlation_coefficient(binned_spiketrains, binary=False, fast=True)
+
+    return cc_matrix
+
+
+def getBinnedSpiketrains(result):
+    """
+    Makes a list of binned spietrains given ids and times.
+    
+    Parameters
+    ----------
+    result : dict
+       see wp2_adex_model_script.py
+        
+    Returns
+    -------
+    cc_matrix : (N, N) np.ndarray
+        The square matrix of correlation coefficients.
+    """  
+    ##### Unpack data ###########
+    # unpack spikes
+    times=np.append( result['in_time'],  result['ex_time']) # [s]
+    ids=np.append(result['in_idx'],  result['ex_idx'])  
+    
+    # get neuron IDs - persume they jsut iterate upwards
+    N = result['NE'] + result['NI']
+    nodes=np.arange(0, N, 1)
+    
+    #results list of binned spiketrains
+    spiketrains = []
+    
+    # iterate through all neurons
+    for node in nodes:
+        t_start = 0
+        t_stop =  result['sim_time'] * 1000 # in ms
+        times1 = times[ids == node]
+        neo_spk_train = neo.SpikeTrain(times1, units='ms', t_start=t_start, t_stop=t_stop)
+        #aclaulate and append coefficent of variation
+        
+        spiketrains.append(neo_spk_train)
+    
+    binned_spiketrains = BinnedSpikeTrain(spiketrains, bin_size=5 * quantities.ms)
+    
+    return binned_spiketrains
+
 
 ###############################################################################
 ###############################################################################
@@ -145,7 +247,7 @@ if __name__ == '__main__':
     gi_min = 0
     gi_max = 100 # should be 100
     ge_min = 0
-    ge_max = 100 # should be 100
+    ge_max = 10 # should be 100
     
     step = 5
     
@@ -160,10 +262,9 @@ if __name__ == '__main__':
     #mean firing frequencies
     m_freqs = []
     # coefficeit of varriation
-    cvs = []
+    m_cvs = []
     # mean pairwise correlation
-    #TODO: mean pairwise correlation
-    
+    m_pairwise_corrs = []   
     # loop through all conditions and analyze files
     for gi in np.arange(gi_min,gi_max+step,step):
         for ge in np.arange(gi_min,gi_max+step,step):
@@ -185,15 +286,22 @@ if __name__ == '__main__':
             m_freq = np.mean(freqs)
             
             # get coefficient of variation
-            #result['ex_time']= timeE
-            #result['in_time']= timeI
+            cvs = getCVs(result)
+            m_cv = np.mean(cvs)
+            m_cvs.append(m_cv)
             
-            #cvs.append(cv(isi(trains)))
+            #get mean pairwise correlation
+            binned_spiketrains = getBinnedSpiketrains(result)
+            cc_matrix = computePariwiseCorr(binned_spiketrains)
+            total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get summ of correlation, excluing self correlation
+            m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
+            
             
             #save data
             ges.append(ge)
             gis.append(gi)
             m_freqs.append(m_freq)
+            m_pairwise_corrs.append(m_pairwise_corr)
        
             
     # create output dictonary
@@ -230,8 +338,43 @@ if __name__ == '__main__':
     # show plot
     plt.show()
     
+    ######### show CV 
+    
+    # Creating figure
+    fig2 = plt.figure(figsize = (10, 7))
+ 
+    # Creating plot
+    #plt.scatter(m_cvs,m_pairwise_corrs)
+    
+    #groupSyncronous = [] # contains classification
+    #i=0
+    #while i < len(m_cvs):
+    #    if (m_cvs[i] > 1) and (m_pariswise_corrs[i] < 0.1):
+    #        groupSyncronous.append(False)
+    #    else:
+    #        groupSyncronous.append(True)
+    #    i += 1 
     
     
+
+    plt.plot(m_cvs, m_pairwise_corrs, marker='o', linestyle='', label="", color = "blue")
+    
+    
+    plt.title("coefficient of variation to pairwise correlation" )
+    
+    plt.xlabel('mean CV ')
+    plt.ylabel('mean pairwise correlaion')
+
+    #plt.legend()
+    # show plot
+    plt.show()
+   
+    
+    
+    
+    
+    
+
     
     
     
