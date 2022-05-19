@@ -166,6 +166,8 @@ def computePariwiseCorr(binned_spiketrains):
     """
     Calculate the NxN matrix of pairwise Pearson’s correlation coefficients between all combinations of N binned spike trains.
     
+    Each entry in the matrix is a real number ranging between -1 (perfectly anti-correlated spike trains) and +1 (perfectly correlated spike trains).
+    
     Parameters
     ----------
     trains : list 
@@ -200,7 +202,7 @@ def getBinnedSpiketrains(result):
     times=np.append( result['in_time'],  result['ex_time']) # [s]
     ids=np.append(result['in_idx'],  result['ex_idx'])  
     
-    # get neuron IDs - persume they jsut iterate upwards
+    # get neuron IDs - persume they just iterate upwards
     N = result['NE'] + result['NI']
     nodes=np.arange(0, N, 1)
     
@@ -247,7 +249,7 @@ if __name__ == '__main__':
     gi_min = 0
     gi_max = 100 # should be 100
     ge_min = 0
-    ge_max = 10 # should be 100
+    ge_max = 100 # should be 100
     
     step = 5
     
@@ -293,7 +295,7 @@ if __name__ == '__main__':
             #get mean pairwise correlation
             binned_spiketrains = getBinnedSpiketrains(result)
             cc_matrix = computePariwiseCorr(binned_spiketrains)
-            total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get summ of correlation, excluing self correlation
+            total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get sum of correlation, excluing self correlation (i.e. diagonal)
             m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
             
             
@@ -346,18 +348,33 @@ if __name__ == '__main__':
     # Creating plot
     #plt.scatter(m_cvs,m_pairwise_corrs)
     
-    #groupSyncronous = [] # contains classification
-    #i=0
-    #while i < len(m_cvs):
-    #    if (m_cvs[i] > 1) and (m_pariswise_corrs[i] < 0.1):
-    #        groupSyncronous.append(False)
-    #    else:
-    #        groupSyncronous.append(True)
-    #    i += 1 
+    groupSyncronous = [] # contains classification
+    i=0
+    while i < len(m_cvs):
+        if (m_cvs[i] > 1) and (m_pairwise_corrs[i] < 0.1):
+            groupSyncronous.append(False)
+        else:
+            groupSyncronous.append(True)
+        i += 1 
     
     
+    m_cvs = np.asarray(m_cvs)
+    m_pairwise_corrs = np.asarray(m_pairwise_corrs)
 
-    plt.plot(m_cvs, m_pairwise_corrs, marker='o', linestyle='', label="", color = "blue")
+    # plot syncronous
+    
+    m_cvs_s = np.ma.masked_array(m_cvs, mask = not(groupSyncronous)).compressed()
+    m_pairwise_corrs_s = np.ma.masked_array(m_pairwise_corrs, mask = not(groupSyncronous)).compressed()
+
+    plt.plot(m_cvs_s, m_pairwise_corrs_s, marker='o', linestyle='', label="", color = "blue")
+    
+    
+    #plot asyncronous
+    m_cvs_a = np.ma.masked_array(m_cvs, mask = groupSyncronous).compressed()
+    m_pairwise_corrs_a = np.ma.masked_array(m_pairwise_corrs, mask = groupSyncronous).compressed()
+    
+    plt.plot(m_cvs_a, m_pairwise_corrs_a, marker='o', linestyle='', label="", color = "orange")
+    
     
     
     plt.title("coefficient of variation to pairwise correlation" )
