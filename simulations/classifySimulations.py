@@ -14,6 +14,7 @@ import elephant
 import neo
 import quantities
 from elephant.conversion import BinnedSpikeTrain
+import pandas as pd
 
 
 def getFreq(result):
@@ -254,6 +255,12 @@ if __name__ == '__main__':
     step = 5
     
     #######################################################
+    ########## specify output #############################
+    doCorrelation = False
+    
+    
+    #######################################################
+    
     
     
     ############## loop through all files ################
@@ -293,17 +300,18 @@ if __name__ == '__main__':
             m_cvs.append(m_cv)
             
             #get mean pairwise correlation
-            binned_spiketrains = getBinnedSpiketrains(result)
-            cc_matrix = computePariwiseCorr(binned_spiketrains)
-            total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get sum of correlation, excluing self correlation (i.e. diagonal)
-            m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
-            
+            if doCorrelation:
+                binned_spiketrains = getBinnedSpiketrains(result)
+                cc_matrix = computePariwiseCorr(binned_spiketrains)
+                total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get sum of correlation, excluing self correlation (i.e. diagonal)
+                m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
+                #save data
+                m_pairwise_corrs.append(m_pairwise_corr)
             
             #save data
             ges.append(ge)
             gis.append(gi)
             m_freqs.append(m_freq)
-            m_pairwise_corrs.append(m_pairwise_corr)
        
             
     # create output dictonary
@@ -336,55 +344,73 @@ if __name__ == '__main__':
     ax.set_xlabel('ge [nS]')
     ax.set_ylabel('gi [nS]')
     ax.set_zlabel('mean freq. [Hz]')
+    
+    
+    # results dictionary for points that are physical
+    pointsPhysical = pd.DataFrame.from_dict(condFreqSpace)
+    # 1 Hz < mean freq < 20 Hz 
+    pointsPhysical = pointsPhysical[(pointsPhysical['m_freqs'] > 1) & (pointsPhysical['m_freqs'] < 20 )]
+    pointsPhysical = pointsPhysical.sort_values(by = ['ge', 'gi'], ascending = [False, False], na_position = 'last')
+    
+    
+    
+    #zipZip = zip(condFreqSpace['ge'],condFreqSpace['gi'] , condFreqSpace['m_freqs'],zip(condFreqSpace['ge'],condFreqSpace['gi'],np.around(condFreqSpace['m_freqs'], decimals=1)))
+    
+    for row in pointsPhysical.head(5).itertuples(index=False):
+        row = row._asdict()
+        ax.text(row['ge'], row['gi'], row['m_freqs'], "("+ str(row['ge']) +", " +  str(row['gi']) +", " + str( np.around(row['m_freqs'],1)) + " )", size=8)
+    
  
     # show plot
     plt.show()
     
     ######### show CV 
     
-    # Creating figure
-    fig2 = plt.figure(figsize = (10, 7))
- 
-    # Creating plot
-    #plt.scatter(m_cvs,m_pairwise_corrs)
+    if doCorrelation : 
     
-    groupSyncronous = [] # contains classification
-    i=0
-    while i < len(m_cvs):
-        if (m_cvs[i] > 1) and (m_pairwise_corrs[i] < 0.1):
-            groupSyncronous.append(False)
-        else:
-            groupSyncronous.append(True)
-        i += 1 
+        # Creating figure
+        fig2 = plt.figure(figsize = (10, 7))
+     
+        # Creating plot
+        #plt.scatter(m_cvs,m_pairwise_corrs)
+        
+        groupSyncronous = [] # contains classification
+        i=0
+        while i < len(m_cvs):
+            if (m_cvs[i] > 1) and (m_pairwise_corrs[i] < 0.1):
+                groupSyncronous.append(False)
+            else:
+                groupSyncronous.append(True)
+            i += 1 
+        
+        
+        m_cvs = np.asarray(m_cvs)
+        m_pairwise_corrs = np.asarray(m_pairwise_corrs)
     
+        # plot syncronous
+        
+        m_cvs_s = np.ma.masked_array(m_cvs, mask = not(groupSyncronous)).compressed()
+        m_pairwise_corrs_s = np.ma.masked_array(m_pairwise_corrs, mask = not(groupSyncronous)).compressed()
     
-    m_cvs = np.asarray(m_cvs)
-    m_pairwise_corrs = np.asarray(m_pairwise_corrs)
-
-    # plot syncronous
+        plt.plot(m_cvs_s, m_pairwise_corrs_s, marker='o', linestyle='', label="", color = "blue")
+        
+        
+        #plot asyncronous
+        m_cvs_a = np.ma.masked_array(m_cvs, mask = groupSyncronous).compressed()
+        m_pairwise_corrs_a = np.ma.masked_array(m_pairwise_corrs, mask = groupSyncronous).compressed()
+        
+        plt.plot(m_cvs_a, m_pairwise_corrs_a, marker='o', linestyle='', label="", color = "orange")
+        
+        
+        
+        plt.title("coefficient of variation to pairwise correlation" )
+        
+        plt.xlabel('mean CV ')
+        plt.ylabel('mean pairwise correlaion')
     
-    m_cvs_s = np.ma.masked_array(m_cvs, mask = not(groupSyncronous)).compressed()
-    m_pairwise_corrs_s = np.ma.masked_array(m_pairwise_corrs, mask = not(groupSyncronous)).compressed()
-
-    plt.plot(m_cvs_s, m_pairwise_corrs_s, marker='o', linestyle='', label="", color = "blue")
-    
-    
-    #plot asyncronous
-    m_cvs_a = np.ma.masked_array(m_cvs, mask = groupSyncronous).compressed()
-    m_pairwise_corrs_a = np.ma.masked_array(m_pairwise_corrs, mask = groupSyncronous).compressed()
-    
-    plt.plot(m_cvs_a, m_pairwise_corrs_a, marker='o', linestyle='', label="", color = "orange")
-    
-    
-    
-    plt.title("coefficient of variation to pairwise correlation" )
-    
-    plt.xlabel('mean CV ')
-    plt.ylabel('mean pairwise correlaion')
-
-    #plt.legend()
-    # show plot
-    plt.show()
+        #plt.legend()
+        # show plot
+        plt.show()
    
     
     
