@@ -34,7 +34,7 @@ Alain Destexhe 2009. "Self-sustained asynchronous irregular states and Up–Down
 parser = argparse.ArgumentParser()
 parser.add_argument("sim_time") # in seconds
 parser.add_argument("N")
-parser.add_argument("a")    # in ns
+parser.add_argument("a")    # in nS
 parser.add_argument("b")    # in pA
 parser.add_argument("ge")
 parser.add_argument("gi")
