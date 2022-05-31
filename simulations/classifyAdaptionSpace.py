@@ -14,8 +14,12 @@ import pandas as pd
 
 # module with all the functions and logic
 from classifySimulations import *
-
+# for progress bar
 from tqdm import tqdm
+
+from multiprocessing import Pool
+
+from datetime import datetime
 
 ###############################################################################
 ###############################################################################
@@ -40,10 +44,10 @@ if __name__ == '__main__':
     
     
     # specify conductance space
-    a_min = 0
-    a_max = 10 # should be 85
-    b_min = 0
-    b_max = 10 # should be 85
+    a_min = 55
+    a_max = 56 # should be 85
+    b_min = 55
+    b_max = 56 # should be 85
     
     step = 1
     
@@ -76,6 +80,8 @@ if __name__ == '__main__':
         # loop through all conditions and analyze files
         for a in np.arange(a_min,a_max+step,step):
             for b in np.arange(b_min,b_max+step,step):
+                
+                
                 # define parameters
                 params['a']=float(a)
                 params['b']=float(b)
@@ -85,6 +91,7 @@ if __name__ == '__main__':
                 curr_dir = getPath(params)
                 
                 try:
+                    
                     # get data
                     result = getResult(curr_dir, save_name, params)
                     
@@ -99,6 +106,8 @@ if __name__ == '__main__':
                     m_cv = np.mean(cvs)
                     m_cvs.append(m_cv)
                     
+                  
+                    
                     #get mean pairwise correlation
                     if doCorrelation:
                         binned_spiketrains = getBinnedSpiketrains(result)
@@ -107,6 +116,7 @@ if __name__ == '__main__':
                         m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
                         #save data
                         m_pairwise_corrs.append(m_pairwise_corr)
+                        
                     
                     #save data
                     a_s.append(a)
@@ -212,14 +222,14 @@ if __name__ == '__main__':
         m_cvs_s = np.ma.masked_array(m_cvs, mask = not(groupSyncronous)).compressed()
         m_pairwise_corrs_s = np.ma.masked_array(m_pairwise_corrs, mask = not(groupSyncronous)).compressed()
     
-        plt.plot(m_cvs_s, m_pairwise_corrs_s, marker='o', linestyle='', label="", color = "blue")
+        plt.plot(m_cvs_s, m_pairwise_corrs_s, marker='o', linestyle='', label="synchronous", color = "blue")
         
         
         #plot asyncronous
         m_cvs_a = np.ma.masked_array(m_cvs, mask = groupSyncronous).compressed()
         m_pairwise_corrs_a = np.ma.masked_array(m_pairwise_corrs, mask = groupSyncronous).compressed()
         
-        plt.plot(m_cvs_a, m_pairwise_corrs_a, marker='o', linestyle='', label="", color = "orange")
+        plt.plot(m_cvs_a, m_pairwise_corrs_a, marker='o', linestyle='', label="asynchronous", color = "orange")
         
         
         
@@ -228,7 +238,7 @@ if __name__ == '__main__':
         plt.xlabel('mean CV ')
         plt.ylabel('mean pairwise correlaion')
     
-        #plt.legend()
+        plt.legend()
         # show plot
         plt.show()
         
@@ -286,12 +296,12 @@ if __name__ == '__main__':
         ########################################################################
         ### output the top 10 asyncronous (a,b) by lowest lowest corr and highest CV
         favouriteAdaptance = classifyResults[(classifyResults['syncronous'] == False)] #  only asyncronous
-        favouriteAdaptance = favouriteAdaptance.sort_values(by = ['m_pairwise_corrs', 'm_cvs'], ascending = [False, False], na_position = 'last')
+        favouriteAdaptance = favouriteAdaptance.sort_values(by = ['m_pairwise_corrs', 'm_cvs'], ascending = [True, False], na_position = 'last')
         if (favouriteAdaptance.empty):
             print(f"No asyncronous simulations were found with a mean network spiking frequency below {maxFreq} Hz")
             
         else:
-            print("===== favourite simulation sorted my most asyncronous =====")    
+            print("===== favourite simulation sorted my most asynchronous =====")    
             print(favouriteAdaptance.head(10))
     
     
@@ -302,10 +312,7 @@ if __name__ == '__main__':
     
     
     
-    
-    
-    
-    
+
     
     
     
