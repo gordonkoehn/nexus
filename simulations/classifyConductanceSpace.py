@@ -67,7 +67,7 @@ if __name__ == '__main__':
     m_pairwise_corrs = []   
     # loop through all conditions and analyze files
     for gi in np.arange(gi_min,gi_max+step,step):
-        for ge in np.arange(gi_min,gi_max+step,step):
+        for ge in np.arange(ge_min,ge_max+step,step):
             # define parameters
             params['ge']=float(ge)
             params['gi']=float(gi)
