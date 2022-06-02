@@ -90,10 +90,17 @@ def getFilename(params):
     save_name : str
         name of simulation file
     
-    """   
-    save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']) ]) + '_'
-    save_name += '_'.join([str(params['ge']), str(params['gi']),  str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
-    save_name += ".npy"
+    """
+    if "replica" in params:
+        save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']) ]) + '_'
+        save_name += '_'.join([str(params['ge']), str(params['gi']),  str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
+        save_name += '_' + str(params['replica'])
+        save_name += ".npy"
+    else:
+        save_name = '_'.join([str(params['N']), str(params['a']),str(params['b']), str(params['sim_time']) ]) + '_'
+        save_name += '_'.join([str(params['ge']), str(params['gi']),  str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
+        save_name += ".npy"
+         
 
     return save_name
 
@@ -119,9 +126,9 @@ def getResult(curr_dir, save_name, params):
     """  
     root_dir = 'simData'
 
-    curr_dir = root_dir + '/' 
-    curr_dir += 'N_' +str(params['N']) + '/'  
-    curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
+    #curr_dir = root_dir + '/' 
+    #curr_dir += 'N_' +str(params['N']) + '/'  
+    #curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
 
     result = np.load(curr_dir + '/' + save_name, allow_pickle=True)
     result = result.tolist() # convert from array back to dictionary

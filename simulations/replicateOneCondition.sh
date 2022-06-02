@@ -28,7 +28,7 @@ a=1
 b=5
 
 # no of replica
-replicaNo=3
+replicaNo=6
 
 
 totalSim=$(((((gimax-gimin)/(gistep))*((gemax-gemin)/(gestep))*replicaNo)))
@@ -42,9 +42,9 @@ for (( ge=gemin; ge<=gemax; ge=ge+5 )); do
     
     for (( gi=gimin; gi<=gimax; gi=gi+5 )); do
         echo  "***********************"
-        echo  "b = $gi"
+        echo  "gi = $gi"
         
-        for ((replica=1; replica<=replicaNo; replica=replica+1)); do
+        for ((replica=4; replica<=replicaNo; replica=replica+1)); do
             python wp2_adex_model_script_replica.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie $replica
         
             curSim=$(( curSim+1 ))
