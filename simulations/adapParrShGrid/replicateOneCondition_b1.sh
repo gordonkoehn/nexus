@@ -27,7 +27,7 @@ gestep=1
 amin=0
 amax=85
 bmin=0
-bmax=21
+bmax=7
 
 astep=1
 bstep=1

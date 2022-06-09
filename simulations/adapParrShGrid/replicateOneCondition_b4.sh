@@ -26,8 +26,8 @@ gestep=1
 # adaptance values
 amin=0
 amax=85
-bmin=65
-bmax=85
+bmin=24
+bmax=31
 
 astep=1
 bstep=1
