@@ -172,7 +172,7 @@ def getCVs(result):
         times1 = times[ids == node] / 1000 # in s
         neo_spk_train = neo.SpikeTrain(times1, units=quantities.second, t_start=t_start, t_stop=t_stop)
         #aclaulate and append coefficent of variation
-        cvs.append(cv(isi(neo_spk_train), nan_policy=omit))
+        cvs.append(cv(isi(neo_spk_train), nan_policy='omit'))
     
     return cvs
 
