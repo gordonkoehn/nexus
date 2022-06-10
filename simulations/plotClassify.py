@@ -43,6 +43,10 @@ def getRasterplot(result):
     plt.xlabel('Time [ms]', fontsize=15)
     plt.ylabel('Neuron Index', fontsize=15) 
     
+    plt.savefig("rasterplot.svg", format = 'svg', dpi=300)
+    
+    
+def getMeanFreqBoxplot(result):
     ##### mean fireing freq.
     
     ## individual neurons
@@ -78,7 +82,7 @@ def getRasterplot(result):
     ax7.set_ylabel('Hz')
     ax7.grid()
     
-    plt.savefig("rasterplot.svg", format = 'svg', dpi=300)
+    plt.savefig("meanFreq.svg", format = 'svg', dpi=300)
     
     
 ###############################################################################
