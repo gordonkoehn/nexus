@@ -73,7 +73,7 @@ def processAdaptancePoint(a,b,replica, params):
 
         curr_dir = getPath(paramsFull)
         
-        result = getResult(curr_dir, save_name, paramsFull)
+        result = getResult_trun(curr_dir, save_name, paramsFull)
         
         ## analyze
         # get mean firing frequencies
@@ -233,7 +233,7 @@ if __name__ == '__main__':
         #save
         classifyResults.to_pickle("classifyData/" + save_name)  
         
-        print ("//Saved full data as classifyData/" + save_name)
+        print ("Saved full data as classifyData/" + save_name)
         
         print (f"A total of {conditionsNotAnalyzed} of {len(adaptanceSpace)} conditions where not analzyed/files not found. (no m_freq calulated).")
         
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     
     replicaSpace.to_pickle("classifyData/" + save_name)
     
-    print ("//Averaged data as classifyData/" + save_name)
+    print ("Averaged data as classifyData/" + save_name)
 
   # #######################################################
   

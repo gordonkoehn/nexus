@@ -87,9 +87,8 @@ if __name__ == '__main__':
                     
                     
                     curr_dir = getPath(params)
-                    curr_dir += '/replica'
                     # get data
-                    result = getResult(curr_dir, save_name, params)
+                    result = getResult_trun(curr_dir, save_name, params)
                     
                     ## analyze
                     # get mean firing frequencies

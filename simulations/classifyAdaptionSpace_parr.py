@@ -70,7 +70,7 @@ def processAdaptancePoint(a,b, params):
 
         curr_dir = getPath(paramsFull)
         
-        result = getResult(curr_dir, save_name, paramsFull)
+        result = getResult_trun(curr_dir, save_name, paramsFull)
         
         ## analyze
         # get mean firing frequencies

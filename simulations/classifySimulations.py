@@ -136,6 +136,57 @@ def getResult(curr_dir, save_name, params):
     result = np.load(curr_dir + '/' + save_name, allow_pickle=True)
     result = result.tolist() # convert from array back to dictionary
     return result
+
+def getResult_trun(curr_dir, save_name, params):
+    """
+    Get simulation results given path and filename and trunicates the first 
+    1000 ms to avoid including the driven period.
+    
+    Parameters
+    ----------
+    curr_dir : str
+       path to file from current directory
+       
+    save_name : str
+        name file was saved as
+        
+        
+    Returns
+    -------
+    result : dict
+        see wp2_adex_model_script.py
+    
+    """  
+    root_dir = 'simData'
+
+    #curr_dir = root_dir + '/' 
+    #curr_dir += 'N_' +str(params['N']) + '/'  
+    #curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
+
+    result = np.load(curr_dir + '/' + save_name, allow_pickle=True)
+    result = result.tolist() # convert from array back to dictionary
+    
+    # trunicate the first 1000ms
+    y = 1000
+    
+    result_temp = dict()
+    
+    result_temp['in_time'] = result['in_time'][(result['in_time'] < y )]
+    result_temp['in_idx'] = result['in_idx'][(result['in_time'] < y)]
+    
+    result_temp['ex_time'] = result['ex_time'][(result['ex_time'] < y)]
+    result_temp['ex_idx'] = result['ex_idx'][(result['ex_time'] < y)]
+    
+    #write back to actual output dict
+    result['in_time'] =  result_temp['in_time']
+    result['in_idx'] =  result_temp['in_idx']
+    
+    result['ex_time'] =  result_temp['ex_time']
+    result['ex_idx'] =  result_temp['ex_idx']
+    
+    return result
+
+
     
 def getCVs(result):
     """
