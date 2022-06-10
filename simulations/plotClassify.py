@@ -8,7 +8,8 @@ Created on Fri Jun 10 11:29:29 2022
 package containting various plotting functions for the classifyer scripts.
 """  
 
-import classifySimulations
+from classifySimulations import *
+
 import matplotlib as plt
 
 def getRasterplot(result):
