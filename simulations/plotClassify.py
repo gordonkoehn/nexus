@@ -10,7 +10,9 @@ package containting various plotting functions for the classifyer scripts.
 
 from classifySimulations import *
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+
+from matplotlib import pyplot
 
 def getRasterplot(result):
 
