@@ -213,7 +213,6 @@ if __name__ == '__main__':
         
         # print how many files skipped / not analyzed
         conditionsNotAnalyzed =classifyResults['m_freq'].isnull().sum()
-        print(f"A total of {conditionsNotAnalyzed} conditions where not analzyed/files not found. (no m_freq calulated).")
         
         ##save processed data to disk
         # get space
@@ -232,7 +231,61 @@ if __name__ == '__main__':
         # get save name
         save_name = getNameClassifyData(params, space)
         #save
-        classifyResults.to_pickle("classifyData/" + save_name)    
+        classifyResults.to_pickle("classifyData/" + save_name)  
+        
+        print ("\\Saved full data as classifyData/" + save_name)
+        
+        print (f"\\A total of {conditionsNotAnalyzed} conditions where not analzyed/files not found. (no m_freq calulated).")
+        
+        
+    ########################################
+    #####  get variance and mean per replica
+    
+
+    #TODO: consider makeing this next block parralle.
+    
+    a_s = []
+    b_s = []
+    mm_freq = []
+    mm_freq_stderr = []
+    mm_cv = []
+    mm_cv_stderr = []
+    mm_corr = []
+    mm_corr_stderr = []
+    
+    
+    for a in np.arange(a_min,a_max+step,step):
+        for b in np.arange(b_min,b_max+step,step):
+            
+                replicas = classifyResults[(classifyResults['a'] == a) & (classifyResults['b']==b)]
+                
+                mm_freq.append(replicas['m_freq'].mean())
+                mm_freq_stderr.append(replicas['m_freq'].std()/replicas.shape[0])
+                mm_cv.append(replicas['m_cvs'].mean())
+                mm_cv_stderr.append(replicas['m_cvs'].std()/replicas.shape[0])
+                mm_corr.append(replicas['m_pairwise_corr'].mean())
+                mm_corr_stderr.append(replicas['m_pairwise_corr'].std()/replicas.shape[0])
+                
+                a_s.append(a)
+                b_s.append(b)
+                
+    
+    # dictionary of lists 
+    dict = {'a_s': a_s,
+            'b_s': b_s,
+            'mm_freq': mm_freq,
+            'mm_freq_stderr':mm_freq_stderr,
+            'mm_cv':mm_cv,
+            'mm_cv_stderr:':mm_cv_stderr,
+            'mm_corr:':mm_corr,
+            'mm_corr_stderr':mm_corr_stderr} 
+    
+    replicaSpace = pd.DataFrame(dict)
+    
+    # get save name
+    save_name = "avg_" + getNameClassifyData(params, space)
+    
+    replicaSpace.to_pickle("classifyData/" + save_name)
     
 
   # #######################################################
