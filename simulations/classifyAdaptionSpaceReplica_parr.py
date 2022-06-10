@@ -136,9 +136,9 @@ if __name__ == '__main__':
     
     
     # specify conductance space
-    a_min = 1
+    a_min = 0
     a_max = 85 # should be 85
-    b_min = 1
+    b_min = 0
     b_max = 85 # should be 85
     
     step = 1
@@ -210,6 +210,10 @@ if __name__ == '__main__':
         
 
         classifyResults = pd.DataFrame(results)
+        
+        # print how many files skipped / not analyzed
+        conditionsNotAnalyzed =classifyResults['m_freq'].isnull().sum()
+        print(f"A total of {conditionsNotAnalyzed} conditions where not analzyed/files not found. (no m_freq calulated).")
         
         ##save processed data to disk
         # get space
