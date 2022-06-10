@@ -101,7 +101,7 @@ if __name__ == '__main__':
     
     # adpation
     params['a'] = float(3)
-    params['a'] = float(12)
+    params['b'] = float(12)
     
     # replica
     params['replica']  = 3
