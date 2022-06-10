@@ -72,6 +72,9 @@ def getPath(params):
     curr_dir += 'N_' +str(params['N']) + '/'  
     curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
     
+    if "replica" in params:
+        curr_dir += '/replica'
+    
     return curr_dir
 
 
