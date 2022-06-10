@@ -231,9 +231,9 @@ if __name__ == '__main__':
         # get save name
         save_name = getNameClassifyData(params, space)
         #save
-        classifyResults.to_pickle("classifyData/" + save_name)  
+        classifyResults.to_pickle("classData/" + save_name)  
         
-        print ("Saved full data as classifyData/" + save_name)
+        print ("Saved full data as classData/" + save_name)
         
         print (f"A total of {conditionsNotAnalyzed} of {len(adaptanceSpace)} conditions where not analzyed/files not found. (no m_freq calulated).")
         
@@ -285,9 +285,9 @@ if __name__ == '__main__':
     # get save name
     save_name = "avg_" + getNameClassifyData(params, space)
     
-    replicaSpace.to_pickle("classifyData/" + save_name)
+    replicaSpace.to_pickle("classData/" + save_name)
     
-    print ("Averaged data as classifyData/" + save_name)
+    print ("Averaged data as classData/" + save_name)
 
   # #######################################################
   

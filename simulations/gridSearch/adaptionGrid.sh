@@ -36,7 +36,7 @@ for (( a=amin; a<=amax; a=a+astep )); do
         echo  "***********************"
         echo  "b = $b"
         
-        python wp2_adex_model_script.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie
+        python ../wp2_adex_model_script.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie
         
         curSim=$(( curSim+1 ))
         percProgress=$(( 100 *(curSim)/(totalSim) )) 
@@ -47,4 +47,3 @@ done
 
 echo "========== DONE =============="
 echo "=============================="
-

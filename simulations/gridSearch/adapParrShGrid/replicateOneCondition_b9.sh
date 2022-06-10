@@ -26,8 +26,8 @@ gestep=1
 # adaptance values
 amin=0
 amax=85
-bmin=56
-bmax=63
+bmin=64
+bmax=71
 
 astep=1
 bstep=1
@@ -64,7 +64,7 @@ for (( ge=gemin; ge<=gemax; ge=ge+gistep )); do
                 echo  "b = $b (a=$a, ge=$gi, gi=$gi)" 
                 
                 for ((replica=1; replica<=replicaNo; replica=replica+1)); do
-                    python ../wp2_adex_model_script_replica.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie $replica
+                    python ../../wp2_adex_model_script_replica.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie $replica
                 
                     curSim=$((curSim+1))
                     percProgress=$(( 100 *(curSim)/(totalSim) )) 

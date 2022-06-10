@@ -21,7 +21,7 @@ for (( ge=0; ge<=100; ge=ge+5 )); do
         echo  "***********************"
         echo  "gi = $gi"
         
-        python wp2_adex_model_script.py 10 100 1 5 $ge $gi $probPee $probPei $probPii $probPie
+        python ../wp2_adex_model_script.py 10 100 1 5 $ge $gi $probPee $probPei $probPii $probPie
     done
     
 done

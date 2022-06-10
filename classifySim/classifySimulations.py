@@ -66,7 +66,7 @@ def getPath(params):
         path to .npy simulation file
     
     """   
-    root_dir = 'simData'
+    root_dir = '../simulations/simData'
 
     curr_dir = root_dir + '/' 
     curr_dir += 'N_' +str(params['N']) + '/'  
@@ -127,12 +127,6 @@ def getResult(curr_dir, save_name, params):
         see wp2_adex_model_script.py
     
     """  
-    root_dir = 'simData'
-
-    #curr_dir = root_dir + '/' 
-    #curr_dir += 'N_' +str(params['N']) + '/'  
-    #curr_dir +=  '_'.join(['p', str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie'])])
-
     result = np.load(curr_dir + '/' + save_name, allow_pickle=True)
     result = result.tolist() # convert from array back to dictionary
     return result
