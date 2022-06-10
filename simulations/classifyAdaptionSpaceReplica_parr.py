@@ -55,7 +55,7 @@ def processAdaptancePoint(a,b,replica, params):
     paramsFull = params.copy()
     paramsFull['a'] = float(a)
     paramsFull['b'] = float(b)
-    paramsFull['replica'] = float(replica)
+    paramsFull['replica'] = int(replica)
     
     
     
@@ -123,8 +123,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(85)
-    params['gi'] = float(75)
+    params['ge'] = float(20)
+    params['gi'] = float(85)
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
@@ -136,10 +136,10 @@ if __name__ == '__main__':
     
     
     # specify conductance space
-    a_min = 0
-    a_max = 10 # should be 85
-    b_min = 0
-    b_max = 10 # should be 85
+    a_min = 1
+    a_max = 85 # should be 85
+    b_min = 1
+    b_max = 85 # should be 85
     
     step = 1
     
@@ -194,17 +194,16 @@ if __name__ == '__main__':
         p['prob_Pii'] = params['prob_Pii']
         p['prob_Pie'] = params['prob_Pie']
     
-        num_cores = 6
-    
+        num_cores = 14
     
 
         job_arguments = adaptanceSpace
    
         pool = multiprocessing.Pool(processes=num_cores)
         
-        #results = pool.starmap(processAdaptancePoint, job_arguments)
+        results = pool.starmap(processAdaptancePoint, job_arguments)
         
-        results = pool.starmap(processAdaptancePoint, tqdm(job_arguments))
+        #results = pool.starmap(processAdaptancePoint, tqdm(job_arguments))
         
         
         pool.close()
@@ -212,8 +211,24 @@ if __name__ == '__main__':
 
         classifyResults = pd.DataFrame(results)
         
-        #save processed data to disk
-        classifyResults.to_pickle("classifyData/dummy.pkl")    
+        ##save processed data to disk
+        # get space
+        space = dict()
+        space["aMin"] = a_min
+        space["bMin"] = b_min
+        space["aMax"] = a_max
+        space["bMax"] = b_max
+            #unchanged as only adaptions space
+        space["giMin"] = params["gi"]
+        space["giMax"] = params["gi"]
+        space["geMin"] = params["ge"]
+        space["geMax"] = params["ge"]
+        space["replica"] = replicaNo
+        
+        # get save name
+        save_name = getNameClassifyData(params, space)
+        #save
+        classifyResults.to_pickle("classifyData/" + save_name)    
     
 
   # #######################################################

@@ -236,3 +236,30 @@ def getBinnedSpiketrains(result):
     binned_spiketrains = BinnedSpikeTrain(spiketrains, bin_size=5 * quantities.ms)
     
     return binned_spiketrains
+
+def getNameClassifyData(params,space):
+    """
+    makes save name for the classifyData resulst based on the choosen search space.
+    
+    Parameters
+    ----------
+    params : dict
+       imcomplete parameters of simulations (excluding a,b,gi,ge, replica)
+       
+    space : 
+        constins max and min parameters in a,b,gi,ge,replica, named aMin and alike
+    Returns
+    -------
+    save_name : str
+        recommended save name
+    """  
+    
+
+    
+    save_name = '_'.join(["N",str(params['N']), "t",str(params['sim_time']) ]) + '_'
+    save_name += '_'.join(["probs",str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
+    save_name += '_' + '_'.join(["a", str(space['aMin']), str(space['aMax']), "b", str(space['bMin']), str(space['bMax']), "gi", str(space['giMin']),str(space['giMax']), "ge", str(space['geMin']),str(space['geMax']) ,"rep",str(space['replica'])])
+    save_name += ".pkl"           
+    
+    
+    return save_name
