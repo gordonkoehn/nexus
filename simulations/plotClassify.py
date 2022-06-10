@@ -103,12 +103,15 @@ if __name__ == '__main__':
     params['a'] = float(3)
     params['a'] = float(12)
     
+    # replica
+    params['replica']  = 3
+    
     
     # get data
-    save_name = getFilename(paramsFull)
+    save_name = getFilename(params)
 
-    curr_dir = getPath(paramsFull)
+    curr_dir = getPath(params)
     
-    result = getResult(curr_dir, save_name, paramsFull)
+    result = getResult(curr_dir, save_name, params)
     
     getRasterplot(result)
