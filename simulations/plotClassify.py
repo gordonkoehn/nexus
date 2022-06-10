@@ -31,8 +31,8 @@ def getRasterplot(result):
     Fig=plt.figure(figsize=(9,7))
     plt.subplots_adjust(hspace=0.7, wspace=0.4)
     
-    matplotlib.rc('xtick', labelsize=15) 
-    matplotlib.rc('ytick', labelsize=15) 
+   # matplotlib.rc('xtick', labelsize=15) 
+    #matplotlib.rc('ytick', labelsize=15) 
     
     
     figa=Fig.add_subplot()
