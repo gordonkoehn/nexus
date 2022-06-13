@@ -142,7 +142,7 @@ if __name__ == '__main__':
     classifyResults = pd.DataFrame(condFreqSpace)
     
     # print how many files skipped / not analyzed
-    conditionsNotAnalyzed =classifyResults['m_freq'].isnull().sum()
+    conditionsNotAnalyzed =classifyResults['m_freqs'].isnull().sum()
     
     ##save processed data to disk
     # get space
