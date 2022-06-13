@@ -36,7 +36,7 @@ bstep=1
 replicaNo=3
 
 conduSpace=$((((gimax-gimin+1)/(gistep))*((gemax-gemin+1)/(gestep))))
-adapSpace=$((((amax-amin)/astep)*((bmax-bmin)/bstep)))
+adapSpace=$((((amax-amin+1)/astep)*((bmax-bmin+1)/bstep)))
 totalSim=$((conduSpace*adapSpace*replicaNo))
 curSim=0
 
@@ -64,7 +64,7 @@ for (( ge=gemin; ge<=gemax; ge=ge+gistep )); do
                 echo  "b = $b (a=$a, ge=$gi, gi=$gi)" 
                 
                 for ((replica=1; replica<=replicaNo; replica=replica+1)); do
-                    #python ../wp2_adex_model_script_replica.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie $replica
+                    python ../wp2_adex_model_script_replica.py 10 100 $a $b $ge $gi $probPee $probPei $probPii $probPie $replica
                 
                     curSim=$((curSim+1))
                     percProgress=$(( 100 *(curSim)/(totalSim) )) 
