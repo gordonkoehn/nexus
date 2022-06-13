@@ -36,7 +36,7 @@ bstep=1
 replicaNo=3
 
 conduSpace=$((((gimax-gimin+1)/(gistep))*((gemax-gemin+1)/(gestep))))
-adapSpace=$((((amax-amin)/astep)*((bmax-bmin)/bstep)))
+adapSpace=$((((amax-amin+1)/astep)*((bmax-bmin+1)/bstep)))
 totalSim=$((conduSpace*adapSpace*replicaNo))
 curSim=0
 
