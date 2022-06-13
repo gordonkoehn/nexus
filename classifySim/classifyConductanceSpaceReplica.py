@@ -238,11 +238,16 @@ if __name__ == '__main__':
     
     for gi in np.arange(gi_min,gi_max+step,step):
         for ge in np.arange(ge_min,ge_max+step,step):
+            try:
                 replicas = condFreqSpace[(condFreqSpace['ge'] == ge) & (condFreqSpace['gi']==gi)]
                 mm_freqs.append(replicas['m_freqs'].mean())
                 mm_freq_stderr.append(replicas['m_freqs'].std()/replicas.shape[0])
                 ge_s.append(ge)
                 gi_s.append(gi)
+            except ZeroDivisionError as zero_error:
+                print(zero_error)
+                print(f"Condition ({gi}, {ge}) was skipped from analysis.")
+   
                 
     
     # dictionary of lists 
