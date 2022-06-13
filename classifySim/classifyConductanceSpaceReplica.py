@@ -72,6 +72,10 @@ if __name__ == '__main__':
     m_cvs = []
     # mean pairwise correlation
     m_pairwise_corrs = []   
+    
+    # conditons count
+    conduSpace = 0
+    
     # loop through all conditions and analyze files
     for gi in np.arange(gi_min,gi_max+step,step):
         for ge in np.arange(ge_min,ge_max+step,step):
@@ -80,6 +84,9 @@ if __name__ == '__main__':
                 params['ge']=float(ge)
                 params['gi']=float(gi)
                 params['replica']=int(replNo)
+                
+                conduSpace =+ 1
+                
                 # get file
                 
                 try:
@@ -129,6 +136,39 @@ if __name__ == '__main__':
     # save frequency values but replace NAs with 0
     condFreqSpace['m_freqs'] = [0 if x != x else x for x in m_freqs] 
 
+
+    ######## save the analyzed data
+    
+    classifyResults = pd.DataFrame(condFreqSpace)
+    
+    # print how many files skipped / not analyzed
+    conditionsNotAnalyzed =classifyResults['m_freq'].isnull().sum()
+    
+    ##save processed data to disk
+    # get space
+    space = dict()
+    space["aMin"] = params["a"]
+    space["bMin"] = params["b"]
+    space["aMax"] = params["a"]
+    space["bMax"] = params["b"]
+        #unchanged as only adaptions space
+    space["giMin"] = gi_min
+    space["giMax"] = gi_max
+    space["geMin"] = ge_min
+    space["geMax"] = ge_max
+    space["replica"] = replicaNo
+    
+    # get save name
+    save_name = getNameClassifyData(params, space) + "_condu"
+    #save
+    classifyResults.to_pickle("classData/" + save_name)  
+    
+    print ("Saved full data as classData/" + save_name)
+    
+    print (f"A total of {conditionsNotAnalyzed} of {conduSpace} conditions where not analzyed/files not found. (no m_freq calulated).")
+    
+    
+    
     
     #######################################################
     
