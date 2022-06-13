@@ -20,8 +20,8 @@ gemax=100
 gimin=70
 gimax=75
 
-gistep=1
-gestep=1
+gistep=5
+gestep=5
  
 # adaptance values
 amin=1
