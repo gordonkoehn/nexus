@@ -64,7 +64,7 @@ params['replica'] = int(args.replica)
 
 
 
-root_dir = '../simData'
+root_dir = '../../simData'
 
 curr_dir = root_dir + '/' 
 curr_dir += 'N_' +str(params['N']) + '/'  
