@@ -39,15 +39,15 @@ if __name__ == '__main__':
     
     
     # specify conductance space
-    ge_min = 20
+    ge_min = 0
     ge_max = 100 # should be 100
-    gi_min = 60
-    gi_max = 85 # should be 100
+    gi_min = 0
+    gi_max = 100 # should be 100
     
     step = 5
     
     # specify no of replica
-    replicaNo = 6
+    replicaNo = 3
     
     #######################################################
     ########## specify output #############################
@@ -170,7 +170,9 @@ if __name__ == '__main__':
     
  
     # show plot
-    plt.show()
+    #plt.show()
+    plt.savefig("condu-freq_condu.svg", format = 'svg', dpi=300)
+    
     
     ######### show CV 
     
@@ -218,8 +220,8 @@ if __name__ == '__main__':
     
         #plt.legend()
         # show plot
-        plt.show()
-   
+        #plt.show()
+        plt.savefig("CV-Corr_condu.svg", format = 'svg', dpi=300)
     
    
     ########################################
@@ -249,7 +251,7 @@ if __name__ == '__main__':
     replicaFreqSpace = pd.DataFrame(dict)
     
     
-    
+    ###################
     ### plot mean mean freq
     # Creating figure
     fig = plt.figure(figsize = (10, 7))
@@ -263,6 +265,7 @@ if __name__ == '__main__':
     ax.set_ylabel('gi [nS]')
     ax.set_zlabel('mean mean freq. [Hz]')
     
+
     
     # results dictionary for points that are physical
     pointsPhysical = pd.DataFrame.from_dict(replicaFreqSpace)
@@ -280,9 +283,13 @@ if __name__ == '__main__':
     
  
     # show plot
-    plt.show()
+    #plt.show()
+    plt.savefig("Cond-m-m-Freq_condu.svg", format = 'svg', dpi=300)
     
-    ### plot the 
+    
+    
+    #################
+    ##### plot the 
     # Creating figure
     fig = plt.figure(figsize = (10, 7))
     ax = plt.axes(projection ="3d")
@@ -294,7 +301,7 @@ if __name__ == '__main__':
     # Creating plot
     ax.bar3d(replicaFreqSpace['ge'],replicaFreqSpace['gi'] ,bottom, width, depth,replicaFreqSpace['mm_freq_stderr'],shade=True)
 
-    plt.title("conductance-mean-mean frequency standard error (of 6 replica)")
+    plt.title("conductance-mean-mean frequency standard error (of 3 replica)")
     
     ax.set_xlabel('ge [nS]')
     ax.set_ylabel('gi [nS]')
@@ -302,8 +309,8 @@ if __name__ == '__main__':
     
 
     # show plot
-    plt.show()
-    
+    #plt.show()
+    plt.savefig("Cond-m-m-Freq-stderr_condu.svg", format = 'svg', dpi=300)
     
     
     
