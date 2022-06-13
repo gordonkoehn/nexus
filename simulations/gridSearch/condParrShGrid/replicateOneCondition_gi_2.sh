@@ -9,10 +9,10 @@
 #"""
 
 # connection probabilities
- probPee=0.02 #(RS->RS) NB: originally all were p=0.02
- probPei=0.02 #(RS->FS)
- probPii=0.02 #(FS->FS)
- probPie=0.02 #(FS->RS)
+probPee=0.02 #(RS->RS) NB: originally all were p=0.02
+probPei=0.02 #(RS->FS)
+probPii=0.02 #(FS->FS)
+probPie=0.02 #(FS->RS)
  
 # conductances fixed
 gemin=0
