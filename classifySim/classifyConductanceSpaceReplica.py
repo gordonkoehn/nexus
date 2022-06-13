@@ -7,9 +7,9 @@ Created on Fri May 13 21:32:13 2022
 """
 import numpy as np
 import sys
-from matplotlib import pyplot as plt
 import math
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # module with all the functions and logic
 from classifySimulations import *
