@@ -123,8 +123,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(20)
-    params['gi'] = float(85)
+    params['ge'] = float(100)
+    params['gi'] = float(100)
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)

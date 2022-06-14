@@ -24,9 +24,9 @@ import time
 ###############################################################################
 if __name__ == '__main__':
     
-    replicaSpace = pd.read_pickle("classData/avg_N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_85.0_85.0_ge_20.0_20.0_rep_3.pkl")
+    replicaSpace = pd.read_pickle("classData/avg_N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_100.0_100.0_ge_100.0_100.0_rep_3.pkl")
     
-    classifyResults = pd.read_pickle("classData/N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_85.0_85.0_ge_20.0_20.0_rep_3.pkl")
+    classifyResults = pd.read_pickle("classData/N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_100.0_100.0_ge_100.0_100.0_rep_3.pkl")
     
     #######################################################
     
