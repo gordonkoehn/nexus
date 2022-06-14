@@ -96,8 +96,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(20)
-    params['gi'] = float(85)
+    params['ge'] = float(100)
+    params['gi'] = float(100)
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
@@ -106,11 +106,13 @@ if __name__ == '__main__':
     params['prob_Pie'] = float(0.02)
     
     # adpation
-    params['a'] = float(3)
-    params['b'] = float(12)
+    params['a'] = float(1)
+    params['b'] = float(5)
     
     # replica
-    params['replica']  = 3
+    params['replica']  = 2
+    
+    
     
     
     # get data
