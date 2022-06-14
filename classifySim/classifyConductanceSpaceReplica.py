@@ -159,8 +159,10 @@ if __name__ == '__main__':
     space["replica"] = replicaNo
     
     # get save name
-    save_name = getNameClassifyData(params, space) + "_condu"
+    save_name = getNameClassifyData(params, space)
     #save
+    
+    #TODO: add if directory does not exist make directory
     classifyResults.to_pickle("classData/" + save_name)  
     
     print ("Saved full data as classData/" + save_name)
