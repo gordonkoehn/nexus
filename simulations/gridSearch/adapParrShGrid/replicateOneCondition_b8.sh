@@ -15,10 +15,10 @@
  probPie=0.02 #(FS->RS)
  
 # conductances fixed
-gemin=100
-gemax=100
-gimin=100
-gimax=100
+gemin=40
+gemax=40
+gimin=80
+gimax=80
 
 gistep=1
 gestep=1

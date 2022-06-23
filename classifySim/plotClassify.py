@@ -106,15 +106,13 @@ if __name__ == '__main__':
     params['prob_Pie'] = float(0.02)
     
     # adpation
-    params['a'] = float(1)
-    params['b'] = float(5)
+    params['a'] = float(26)
+    params['b'] = float(42)
     
     # replica
-    params['replica']  = 2
+    params['replica']  = 1
     
-    
-    
-    
+  
     # get data
     save_name = getFilename(params)
 
