@@ -107,6 +107,9 @@ def processAdaptancePoint(a,b,replica, params):
         print(fnf_error)
         print("File was skipped and condition excluded from analysis.")
         
+    except Error as error:
+        print(error)
+        
     return stats
     
     
