@@ -197,7 +197,7 @@ if __name__ == '__main__':
         p['prob_Pii'] = params['prob_Pii']
         p['prob_Pie'] = params['prob_Pie']
     
-        num_cores = 14
+        num_cores = 6
     
 
         job_arguments = adaptanceSpace
