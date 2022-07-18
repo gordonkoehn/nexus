@@ -206,28 +206,6 @@ if __name__ == '__main__':
       plt.show()
       
       
-      #######################################################################
-      #### show (a,b) grid with colored syncronous any asyncornous colored - 20 Hz
-      # Creating figure
-      fig6 = plt.figure(figsize = (7, 7))
-            
-      maxFreq = 20 # Hz
-        
-      # syncronous
-      plt.plot(replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="synchronous", color = "blue")
-            
-      #asyncornous
-      plt.plot(replicaSpace[(replicaSpace['asynchronous']==True) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous'] ==True) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="asynchronous", color = "orange")
-            
-      plt.title("adaptance (a,b) space by synchrony - mean freq <20Hz - replica" )
-            
-      plt.xlabel('a [nS]')
-      plt.ylabel('b [pA]')
-        
-      plt.legend()
-      # show plot
-      plt.show()
-      
       
       #######################################################################
       #### show (a,b) grid with colored syncronous any asyncornous colored - 20 Hz
