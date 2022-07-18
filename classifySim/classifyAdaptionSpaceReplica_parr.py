@@ -279,8 +279,8 @@ if __name__ == '__main__':
             'mm_freq': mm_freq,
             'mm_freq_stderr':mm_freq_stderr,
             'mm_cv':mm_cv,
-            'mm_cv_stderr:':mm_cv_stderr,
-            'mm_corr:':mm_corr,
+            'mm_cv_stderr':mm_cv_stderr,
+            'mm_corr':mm_corr,
             'mm_corr_stderr':mm_corr_stderr} 
     
     replicaSpace = pd.DataFrame(dict)
