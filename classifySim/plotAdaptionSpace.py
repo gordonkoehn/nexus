@@ -175,7 +175,7 @@ if __name__ == '__main__':
       ###############################################
       ######## plot adaption - mean mean freq #####
       # Creating figure
-      fig1 = plt.figure(figsize = (10, 7))
+      fig5 = plt.figure(figsize = (10, 7))
       ax = plt.axes(projection ="3d")
       plt.title("adaptance-mean-mean-frequency space -  mean replica")
       
@@ -205,6 +205,112 @@ if __name__ == '__main__':
 
       plt.show()
       
-      ###############################################
-      ######## plot adaption - mean mean freq #####
       
+      #######################################################################
+      #### show (a,b) grid with colored syncronous any asyncornous colored - 20 Hz
+      # Creating figure
+      fig6 = plt.figure(figsize = (7, 7))
+            
+      maxFreq = 20 # Hz
+        
+      # syncronous
+      plt.plot(replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="synchronous", color = "blue")
+            
+      #asyncornous
+      plt.plot(replicaSpace[(replicaSpace['asynchronous']==True) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous'] ==True) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="asynchronous", color = "orange")
+            
+      plt.title("adaptance (a,b) space by synchrony - mean freq <20Hz - replica" )
+            
+      plt.xlabel('a [nS]')
+      plt.ylabel('b [pA]')
+        
+      plt.legend()
+      # show plot
+      plt.show()
+      
+      
+      #######################################################################
+      #### show (a,b) grid with colored syncronous any asyncornous colored - 20 Hz
+      # Creating figure
+      fig6 = plt.figure(figsize = (7, 7))
+            
+      maxFreq = 20 # Hz
+        
+      # syncronous
+      plt.plot(replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="synchronous", color = "blue")
+            
+      #asyncornous
+      plt.plot(replicaSpace[(replicaSpace['asynchronous']==True) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous'] ==True) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="asynchronous", color = "orange")
+            
+      plt.title("adaptance (a,b) space by synchrony - mean freq <20Hz - replica" )
+            
+      plt.xlabel('a [nS]')
+      plt.ylabel('b [pA]')
+        
+      plt.legend()
+      # show plot
+      plt.show()
+      
+      
+      # ######################################################################
+      # ### do CV and corr plot
+      # #Creating figure
+      fig7 = plt.figure(figsize = (10, 7))
+         
+     
+      #plot synchronous
+      asynPoints = replicaSpace[(replicaSpace['asynchronous']==True)]
+        
+      plt.plot(asynPoints['mm_cv'],asynPoints['mm_corr'],  marker='o', linestyle='', label="synchronous", color = "orange")
+            
+      #plot synchronous
+      synPoints = replicaSpace[replicaSpace['asynchronous']==False]
+        
+      plt.plot(synPoints['mm_cv'],synPoints['mm_corr'],  marker='o', linestyle='', label="asynchronous", color = "blue")
+           
+      plt.title("coefficient of variation to pairwise correlation - mean replica" )
+            
+      plt.xlabel('mean CV ')
+      plt.ylabel('mean pairwise correlaion')
+        
+      plt.legend()
+      # show plot
+      plt.show()
+     
+      
+      ############################################
+      # add CV and CORR a.b heatmaps to see gradients
+      
+      fig8, axs = plt.subplots(1,2, figsize = (10, 5))
+      fig8.suptitle('Vertically stacked subplots')
+
+      #### subplot 0
+      
+      cm = plt.cm.get_cmap('RdYlBu')
+      x = replicaSpace['a_s']
+      y = replicaSpace['b_s']
+      
+      z = replicaSpace['mm_cv']
+      sc = axs[0].scatter(x, y, c=z, vmin=replicaSpace['mm_cv'].min(), vmax=replicaSpace['mm_cv'].max(), s=35, cmap=cm)
+      
+      fig8.colorbar(sc, label= "CV", ax= axs[0])
+      
+      axs[0].set(xlabel='a [nS]', ylabel='b [pA]')
+      
+      # subplot 1
+      
+      cm = plt.cm.get_cmap('RdYlBu')
+      x = replicaSpace['a_s']
+      y = replicaSpace['b_s']
+      
+      z = replicaSpace['mm_corr']
+      sc = axs[1].scatter(x, y, c=z, vmin=replicaSpace['mm_corr'].min(), vmax=replicaSpace['mm_corr'].max(), s=35, cmap=cm)
+      
+      #axs[1].colorbar(sc, label= "CV")
+      
+      fig8.colorbar(sc, label= "corr", ax= axs[1])
+      
+      axs[1].set(xlabel='a [nS]', ylabel='b [pA]')
+   
+      
+    
