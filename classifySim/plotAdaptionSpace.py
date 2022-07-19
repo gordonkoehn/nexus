@@ -244,13 +244,13 @@ if __name__ == '__main__':
       asynPoints = replicaSpace[(replicaSpace['asynchronous']==False)]
         
       plt.plot(asynPoints['mm_cv'],asynPoints['mm_corr'],  marker='o', linestyle='',
-               label="synchronous", color = "orange")
+               label="synchronous", color = "blue")
             
       #plot synchronous
       synPoints = replicaSpace[replicaSpace['asynchronous']==True]
         
       plt.plot(synPoints['mm_cv'],synPoints['mm_corr'],  marker='o', linestyle='',
-               label="asynchronous", color = "blue")
+               label="asynchronous", color = "orange")
            
       plt.title("coefficient of variation to pairwise correlation - mean replica" )
             
