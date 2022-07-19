@@ -215,10 +215,14 @@ if __name__ == '__main__':
       maxFreq = 20 # Hz
         
       # syncronous
-      plt.plot(replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="synchronous", color = "blue")
+      plt.plot(replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'],
+               replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'],
+               marker='o', linestyle='', label="synchronous", color = "blue")
             
       #asyncornous
-      plt.plot(replicaSpace[(replicaSpace['asynchronous']==True) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'], replicaSpace[(replicaSpace['asynchronous'] ==True) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'], marker='o', linestyle='', label="asynchronous", color = "orange")
+      plt.plot(replicaSpace[(replicaSpace['asynchronous']==True) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'],
+               replicaSpace[(replicaSpace['asynchronous'] ==True) & (replicaSpace['mm_freq']<=maxFreq)]['b_s'],
+               marker='o', linestyle='', label="asynchronous", color = "orange")
             
       plt.title("adaptance (a,b) space by synchrony - mean freq <20Hz - replica" )
             
@@ -237,14 +241,16 @@ if __name__ == '__main__':
          
      
       #plot synchronous
-      asynPoints = replicaSpace[(replicaSpace['asynchronous']==True)]
+      asynPoints = replicaSpace[(replicaSpace['asynchronous']==False)]
         
-      plt.plot(asynPoints['mm_cv'],asynPoints['mm_corr'],  marker='o', linestyle='', label="synchronous", color = "orange")
+      plt.plot(asynPoints['mm_cv'],asynPoints['mm_corr'],  marker='o', linestyle='',
+               label="synchronous", color = "orange")
             
       #plot synchronous
-      synPoints = replicaSpace[replicaSpace['asynchronous']==False]
+      synPoints = replicaSpace[replicaSpace['asynchronous']==True]
         
-      plt.plot(synPoints['mm_cv'],synPoints['mm_corr'],  marker='o', linestyle='', label="asynchronous", color = "blue")
+      plt.plot(synPoints['mm_cv'],synPoints['mm_corr'],  marker='o', linestyle='',
+               label="asynchronous", color = "blue")
            
       plt.title("coefficient of variation to pairwise correlation - mean replica" )
             
@@ -260,7 +266,7 @@ if __name__ == '__main__':
       # add CV and CORR a.b heatmaps to see gradients
       
       fig8, axs = plt.subplots(1,2, figsize = (10, 5))
-      fig8.suptitle('Vertically stacked subplots')
+      fig8.suptitle('Heatmaps of CV and corr for (a,b) adoption space')
 
       #### subplot 0
       
