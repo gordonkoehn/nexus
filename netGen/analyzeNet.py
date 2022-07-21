@@ -20,6 +20,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import collections
+import pandas as pd
 
 
 
@@ -29,7 +30,7 @@ class netInspector():
     It was intended to be used for directed graphs.
     """
 
-    def __init__(self, G: nx.classes.graph.Graph):
+    def __init__(self, G: nx.classes.graph.Graph, graph_type : str, genParams : dict):
         """Initialize netInspector object with a given Graph G.
         
         Parameters
@@ -38,6 +39,9 @@ class netInspector():
             Graph to analyze
         """
         self.G = G
+        self.graph_type = graph_type
+        self.genParams = genParams
+        
         self.degree_sequence = None
         self.degree_hist = None
         self.node_degree_avg = None
@@ -45,6 +49,7 @@ class netInspector():
         self.average_shortest_path = None
         # self.small_wolrd_coeffs = None
         self.power_law_coeffs = None
+    
                 
         
         
@@ -60,13 +65,22 @@ class netInspector():
         """
         output = ""
         
-        if (self.degree_sequence is not None):
-            output += f"Degree sequence {self.degree_sequence} \n\n"
+        
+        # if (self.degree_sequence is not None):
+        #     output += f"Degree sequence\n {self.degree_sequence} \n\n"
+            
         if (self.degree_hist is not None):
              output +=  "== Degree histogram == \n"
-             output += "degree #nodes \n"
-             for d in self.degree_hist:
-                 output += f"{d:4} {self.degree_hist[d]:6} \n"
+             # just printing out nicly with pandas
+             degree_hist = pd.DataFrame.from_dict(self.degree_hist, columns=['nodes'],orient='index')
+             degree_hist['degree'] = degree_hist.index
+             degree_hist = degree_hist.sort_values(by=['degree'])
+             columns_titles = ["degree","nodes"]
+             degree_hist=degree_hist.reindex(columns=columns_titles)
+             output += (degree_hist.to_string(index=False))
+             output = "\n"
+         
+                 
         if (self.node_degree_avg is not None): 
             output += f"Average Node Degree: {self.node_degree_avg:.2f}\n"
         if (self.average_clustering is not None): 
@@ -160,7 +174,7 @@ class netInspector():
         ydata = np.asarray(list(self.degree_hist.values()))
         
     
-        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 1.9, -np.inf], [+np.inf, 3.1, np.inf]))
+        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
         
         power_law_coeffs = {'popt': popt,'pcov': pcov}
         
@@ -180,10 +194,75 @@ class netInspector():
         # plt.legend()
         # plt.show()
         
+    def analyticsPanel(self):
+        """Create panel of graph, degree distribution, and network characteristics."""
+        #fig, axs = plt.subplots(1,1, figsize = (14,7))
+        
+        #TODO make this the same line of code to be used as above
+        def func(x, a, b, c):
+            return a * np.exp(-b * x) + c
+        
+        
+        ## plotting options
+        options = {
+        'node_color': 'lightsteelblue',
+        'node_size': 250,
+        'width': 1,
+        'arrowstyle': '-|>',
+        'arrowsize': 10,
+        }
+        
+        # Set margins for the axes so that nodes aren't clipped
+       # axs[0].gca()
+        #axs[0].margins(0.20)
+        #axs[0].axis("off")
+    
         
     
+        fig, axes = plt.subplots(nrows=1, ncols=3, figsize = (15,7))
+        ax = axes.flatten()
+
+        ### draw graph        
+        #nx.draw_networkx(self.G, ax=ax[0], pos=nx.kamada_kawai_layout(self.G), arrows=True, **options)
+        # with labels
+        nx.draw_networkx(self.G, ax=ax[0], pos=nx.kamada_kawai_layout(self.G), arrows=True, **options, with_labels=True,font_size =10, font_weight='regular')
+         
+        
+        ax[0].set_axis_off()
+        ax[0].set_title("Graph")
+        
+        ## plot node degree
+        #TODO: alter this to a numpoy array and sort by value  so that one
+        xdata = np.asarray(list(self.degree_hist.keys()))
+        ydata = np.asarray(list(self.degree_hist.values()))
+        
+        
+        ax[1].plot(xdata, ydata, '.', label='data', markersize=10)
+        
+        popt = self.power_law_coeffs['popt'] 
+        
+        xSpace = np.linspace(min(xdata), max(xdata), 100)
+        
+        ax[1].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+        
+        ax[1].set(xlabel="x - node degree", ylabel="y - frequency")
+        ax[1].legend()
+        ax[1].set_title("Node Degree Distribution")
+        
+        ### add text about graph propertires
+        
+        ax[2].set_axis_off()
+        ax[2].set_title("Graph Analysis")
+        ax[2].plot(1,1)
+        
+        # these are matplotlib.patch.Patch properties
+        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     
-    
+
+        ax[2].text(0.05, 0.95, self.__str__() , transform=ax[2].transAxes, fontsize=10, verticalalignment='top', bbox=props)
+        
+
+     
     
         
         

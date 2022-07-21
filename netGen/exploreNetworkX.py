@@ -17,82 +17,75 @@ from analyzeNet import *
 ###############################################################################
 if __name__ == '__main__':
     
+    
+    
+    
     ###########################################################################
     ####################### Graph Generation ##################################
     # make a scale free graph of defined parameters
-    
    
-    # n = 25
-    #alpha = 0.3
-    #beta =0.3
-    #gamma = 0.3
+    ## define output lists
+    
+    a_min = 0.15
+    a_max = 0.85
+    b_min = 0.15
+    b_max = 0.85
+    g_min = 0.05
+    g_max = 0.85
+   
+    step = 0.05
+   
+    alphas = np.arange(a_min, a_max+step, step)
+    betas = np.arange(b_min, b_max+step, step)
+    gammas = np.arange(g_min, g_max+step, step)
+    
+    abg_space = []
+    
+    # loop through all conditions and analyze files
+    for a in alphas:
+        for b in betas:
+            for g in gammas:
+                if (a+b+g == 1): 
+                    abg_point = [a,b,g]
+                    abg_space.append(abg_point)
+                    
+    print(f"A total of {len(abg_space) : 3f} combindation of alpha, beat and gamma are tested.")
+    
+    n =45
+    d_in = 0.2
+    d_out = 0
 
-    # make a scale-free directed graph with parameters
-    G = nx.scale_free_graph(20,alpha = 0.1, gamma=0.5, beta=0.4 ) 
+    for a,b,g in abg_space:
     
+        # make a scale-free directed graph with parameters
+        G = nx.scale_free_graph(n,alpha = a, beta=b, gamma=g, delta_in=d_in, delta_out=d_out) 
     
+
+        ######################## Vizailize Graphs #################################
+        # plot graphs
+        ######################### Analyze Graphs ##################################
+        # calculate and visualize graph characteristics
+        
+        genParams = {'alpha':a, 'beta':b, 'gamma':g, 'delta_in':d_in, 'delta_out':d_out}
     
-    #G= nx.barabasi_albert_graph(15,10) #undirected
-    #nx.draw(G, with_labels=True)
-    #plt.show()
-    
-    
-    #powerlaw_cluster_graph(n, m, p, seed=None)
-    #G = nx.navigable_small_world_graph(4)
-    
-    
-    ###########################################################################
-    ######################## Vizailize Graphs #################################
-    # plot graphs
-    
-    ## plotting options
-    options = {
-    'node_color': 'lightsteelblue',
-    'node_size': 300,
-    'width': 2,
-    'arrowstyle': '-|>',
-    'arrowsize': 12,
-    }
-    
-    ## figure setup 
-    fig, axes = plt.subplots(1,1, figsize = (7,7))
-        # Set margins for the axes so that nodes aren't clipped
-    ax = plt.gca()
-    ax.margins(0.20)
-    plt.axis("off")
-    
-    ## differnt plotting commands 
-    #nx.draw(G)
-    #nx.draw_networkx(G)
-    nx.draw_random(G, arrows=True, **options, with_labels=True, font_weight='regular')
-    #nx.draw_circular(G)
-    #nx.draw_kamada_kawai(G)
-    #nx.draw_random(G)
- 
-    
-    ## show interactive plot
-    #plt.show()
-    
-    ###########################################################################
-    ######################### Analyze Graphs ##################################
-    # calculate and visualize graph characteristics
-    
-    ## print out graph characteristics
-    
-    #degree_dist_print(G)
-    
-    
-    
-    G.graph['networkType'] = "random"
-    
-    
-    GInspector = netInspector(G)
-    
-    GInspector.eval_all()
-    
-    print(GInspector)
-    
-    print(G.graph['networkType'])
+        GInspector = netInspector(G, "scale-free", genParams)
+        GInspector.eval_all()
+        GInspector.analyticsPanel()
+        
+        ####
+        #TODO: calculate the theoretical in-degree and out-degree exponents
+        c1 = (a + b) / (1+d_in*(a+g))
+        
+        c2 = (b + g) / (1 + d_out *(a + g))
+        
+        x_in = 1 + 1/c1
+
+        x_out = 1 + 1/c2 
+        
+        print(f"X_in = {x_in : 2.2f}")
+        
+        print(f"X_out = {x_out : 2.2f}")
+        
     
     
     
