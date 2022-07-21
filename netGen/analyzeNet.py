@@ -44,6 +44,7 @@ class netInspector():
         self.average_clustering = None
         self.average_shortest_path = None
         # self.small_wolrd_coeffs = None
+        self.power_law_coeffs = None
                 
         
         
@@ -78,6 +79,9 @@ class netInspector():
         
         if (self.average_shortest_path is not None):
             output += f"Average shortest path: {self.average_shortest_path : .2f}\n"
+            
+        if (self.power_law_coeffs is not None):
+            output += f"Power-Law fit: gamma={self.power_law_coeffs['popt'][1] : 2.3f}\n"
         
         return output
     
@@ -158,24 +162,23 @@ class netInspector():
     
         popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 1.9, -np.inf], [+np.inf, 3.1, np.inf]))
         
+        power_law_coeffs = {'popt': popt,'pcov': pcov}
         
-        print(popt)
+        self.power_law_coeffs = power_law_coeffs
         
+    
+        # fig, axes = plt.subplots(1,1, figsize = (7,7))
         
-        fig, axes = plt.subplots(1,1, figsize = (7,7))
+        # plt.plot(xdata, ydata, '.', label='data')
         
-       
+        # xSpace = np.linspace(min(xdata), max(xdata), 100)
         
-        plt.plot(xdata, ydata, '.', label='data')
+        # plt.plot(xSpace, func(xSpace, *popt), '-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
         
-        xSpace = np.linspace(min(xdata), max(xdata), 100)
-        
-        plt.plot(xSpace, func(xSpace, *popt), '-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
-        
-        plt.xlabel('x - node degree')
-        plt.ylabel('y - frequency')
-        plt.legend()
-        plt.show()
+        # plt.xlabel('x - node degree')
+        # plt.ylabel('y - frequency')
+        # plt.legend()
+        # plt.show()
         
         
     
