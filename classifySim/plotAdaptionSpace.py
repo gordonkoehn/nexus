@@ -266,7 +266,7 @@ if __name__ == '__main__':
       # add CV and CORR a.b heatmaps to see gradients
       
       fig8, axs = plt.subplots(1,2, figsize = (10, 5))
-      fig8.suptitle('Heatmaps of CV and corr for (a,b) adoption space')
+      fig8.suptitle('Heatmaps of CV and corr for (a,b) adaptance space')
 
       #### subplot 0
       
