@@ -1,0 +1,1 @@
+"""Analyzes / Generates specified networks to be used for brian2 simulations.This package is to contain functions to generate networks specifed by networkparameters and to be fed into brian2 simulations. It shall also include analytics to such as visualization of networks. Largely based on networkX."""
