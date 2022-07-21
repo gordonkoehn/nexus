@@ -165,11 +165,11 @@ def getResult_trun(curr_dir, save_name, params):
     
     result_temp = dict()
     
-    result_temp['in_time'] = result['in_time'][(result['in_time'] < y )]
-    result_temp['in_idx'] = result['in_idx'][(result['in_time'] < y)]
+    result_temp['in_time'] = result['in_time'][(result['in_time'] > y )]
+    result_temp['in_idx'] = result['in_idx'][(result['in_time'] > y)]
     
-    result_temp['ex_time'] = result['ex_time'][(result['ex_time'] < y)]
-    result_temp['ex_idx'] = result['ex_idx'][(result['ex_time'] < y)]
+    result_temp['ex_time'] = result['ex_time'][(result['ex_time'] > y)]
+    result_temp['ex_idx'] = result['ex_idx'][(result['ex_time'] > y)]
     
     #write back to actual output dict
     result['in_time'] =  result_temp['in_time']
