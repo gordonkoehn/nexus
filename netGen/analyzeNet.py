@@ -49,10 +49,15 @@ class netInspector():
         self.average_shortest_path = None
         # self.small_wolrd_coeffs = None
         self.power_law_coeffs = None
+        
+        self.x_in = None
+        self.x_out = None 
+        self.out_degree_hist = None
+        self.in_degree_hist = None
+        self.out_power_law_coeffs = None
+        self.in_power_law_coeffs = None
+        self.small_world_coeffs = None
     
-                
-        
-        
 
     def __str__(self):
         """
@@ -65,21 +70,37 @@ class netInspector():
         """
         output = ""
         
+        if (self.graph_type is not None):
+            output += "Graph type:" + self.graph_type + "\n"
+            
+            output += "Generation Parameters: \n"
+            for key, value in self.genParams.items():
+                output += f"{key} : {value:2.2f}\n"
+            output += "\n"
+            
+            if (self.graph_type == "scale-free"):
+               
+                output += "= Theoretical exponents =\n"
+                output += f"X_in = {self.x_in : 2.2f}\n"
+                
+                output += f"X_out = {self.x_out : 2.2f}\n"
+            
+    
         
         # if (self.degree_sequence is not None):
         #     output += f"Degree sequence\n {self.degree_sequence} \n\n"
             
-        if (self.degree_hist is not None):
-             output +=  "== Degree histogram == \n"
-             # just printing out nicly with pandas
-             degree_hist = pd.DataFrame.from_dict(self.degree_hist, columns=['nodes'],orient='index')
-             degree_hist['degree'] = degree_hist.index
-             degree_hist = degree_hist.sort_values(by=['degree'])
-             columns_titles = ["degree","nodes"]
-             degree_hist=degree_hist.reindex(columns=columns_titles)
-             output += (degree_hist.to_string(index=False))
-             output = "\n"
-         
+        # if (self.degree_hist is not None):
+        #      output +=  "== Degree histogram == \n"
+        #      # just printing out nicly with pandas
+        #      degree_hist = pd.DataFrame.from_dict(self.degree_hist, columns=['nodes'],orient='index')
+        #      degree_hist['degree'] = degree_hist.index
+        #      degree_hist = degree_hist.sort_values(by=['degree'])
+        #      columns_titles = ["degree","nodes"]
+        #      degree_hist=degree_hist.reindex(columns=columns_titles)
+        #      output += (degree_hist.to_string(index=False))
+        #      output += "\n"
+             
                  
         if (self.node_degree_avg is not None): 
             output += f"Average Node Degree: {self.node_degree_avg:.2f}\n"
@@ -96,18 +117,50 @@ class netInspector():
             
         if (self.power_law_coeffs is not None):
             output += f"Power-Law fit: gamma={self.power_law_coeffs['popt'][1] : 2.3f}\n"
+            
+             
+        if (self.small_world_coeffs is not None):
+            output += "=Small-worldness="
+            output += f"Sigma: {self.power_law_coeffs['sigma']: 2.3f}\n"
+            output += f"Gamma: {self.power_law_coeffs['gamma']: 2.3f}\n"
+            
         
         return output
+    
+    
     
     def eval_all(self):
         """Evaluate all network characteristics."""
         self.degree_seq_hist()
+           
+        self.out_degree_seq_hist()
+        self.in_degree_seq_hist()
+        
         self.avg_node_degree()
         self.compute_clustering()
         #self.compute_small_world_coeff()
         self.compute_shortest_path()
         self.power_law_fit()
-    
+        #self.compute_small_world_coeff()
+        
+        # calculate theoretical scale free in- /out- degrees
+        if (self.graph_type == "scale-free"):
+            a = self.genParams['alpha']
+            b = self.genParams['beta']
+            g = self.genParams['gamma']
+            d_out = self.genParams['delta_in']
+            d_in = self.genParams['delta_out']
+            
+            c1 = (a + b) / (1 + d_in * (a + g))
+            c2 = (b + g) / (1 + d_out *(a + g))
+            
+            x_in = 1 + 1/c1
+            x_out = 1 + 1/c2 
+            
+            self.x_in = x_in
+            self.x_out = x_out
+     
+            
   
 
     def degree_seq_hist(self): 
@@ -135,9 +188,41 @@ class netInspector():
             
         self.degree_hist = hist
         
+    def out_degree_seq_hist(self):
+        """Calculate out-degree sequence and histogram and self assigns it."""
+        out_degree_sequence = [d for n, d in self.G.out_degree()]  # degree sequence
+
+        self.out_degree_sequence =out_degree_sequence
+        
+        hist = {}
+        for d in out_degree_sequence:
+            if d in hist:
+                hist[d] += 1
+            else:
+                hist[d] = 1
+                
+        self.out_degree_hist = hist
+        
+    def in_degree_seq_hist(self):
+        """Calculate in-degree sequence and histogram and self assigns it."""
+        in_degree_sequence = [d for n, d in self.G.in_degree()]  # degree sequence
+         
+        self.in_degree_sequence = in_degree_sequence
+          
+        hist = {}
+        for d in in_degree_sequence:
+            if d in hist:
+                hist[d] += 1
+            else:
+                hist[d] = 1
+                  
+        self.in_degree_hist = hist
+               
+        
     def avg_node_degree(self):
         """Claculate and self-assign average node degree."""
         self.node_degree_avg = np.mean(self.degree_sequence)
+        
         
     
     def compute_clustering(self):
@@ -163,13 +248,13 @@ class netInspector():
         self.average_shortest_path =  nx.average_shortest_path_length(self.G)
         
     def power_law_fit(self):
-        """Calculate power-law exponent by linear regression."""
+        """Calculate power-law exponents of in-/out- and all-degrees by linear regression."""
         
         def func(x, a, b, c):
             return a * np.exp(-b * x) + c
         
         
-        #TODO: alter this to a numpoy array and sort by value  so that one
+        ## all connections
         xdata = np.asarray(list(self.degree_hist.keys()))
         ydata = np.asarray(list(self.degree_hist.values()))
         
@@ -180,7 +265,29 @@ class netInspector():
         
         self.power_law_coeffs = power_law_coeffs
         
+        
+        ## in degrees
+        xdata = np.asarray(list(self.in_degree_hist.keys()))
+        ydata = np.asarray(list(self.in_degree_hist.values()))
+        
     
+        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
+        
+        power_law_coeffs = {'popt': popt,'pcov': pcov}
+        
+        self.in_power_law_coeffs = power_law_coeffs
+        
+        ## out degrees
+        xdata = np.asarray(list(self.out_degree_hist.keys()))
+        ydata = np.asarray(list(self.out_degree_hist.values()))
+        
+    
+        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
+        
+        power_law_coeffs = {'popt': popt,'pcov': pcov}
+        
+        self.out_power_law_coeffs = power_law_coeffs
+        
         # fig, axes = plt.subplots(1,1, figsize = (7,7))
         
         # plt.plot(xdata, ydata, '.', label='data')
@@ -193,6 +300,15 @@ class netInspector():
         # plt.ylabel('y - frequency')
         # plt.legend()
         # plt.show()
+        
+        
+    def compute_small_world_coeff(self):
+        """Compute small-world coeffs sigma and omega."""
+        s= nx.sigma(self.G.to_undirected(), niter=100, nrand=10, seed=None)[source]
+        o= nx.sigma(self.G.to_undirected(), niter=100, nrand=10, seed=None)[source]
+        
+        
+        self.small_wolrd_coeffs = {'sigma':s, 'omage':o}
         
     def analyticsPanel(self):
         """Create panel of graph, degree distribution, and network characteristics."""
@@ -219,7 +335,7 @@ class netInspector():
     
         
     
-        fig, axes = plt.subplots(nrows=1, ncols=3, figsize = (15,7))
+        fig, axes = plt.subplots(nrows=2, ncols=3, figsize = (15,7))
         ax = axes.flatten()
 
         ### draw graph        
@@ -231,38 +347,92 @@ class netInspector():
         ax[0].set_axis_off()
         ax[0].set_title("Graph")
         
-        ## plot node degree
-        #TODO: alter this to a numpoy array and sort by value  so that one
-        xdata = np.asarray(list(self.degree_hist.keys()))
-        ydata = np.asarray(list(self.degree_hist.values()))
-        
-        
-        ax[1].plot(xdata, ydata, '.', label='data', markersize=10)
-        
-        popt = self.power_law_coeffs['popt'] 
-        
-        xSpace = np.linspace(min(xdata), max(xdata), 100)
-        
-        ax[1].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
-        
-        ax[1].set(xlabel="x - node degree", ylabel="y - frequency")
-        ax[1].legend()
-        ax[1].set_title("Node Degree Distribution")
         
         ### add text about graph propertires
         
-        ax[2].set_axis_off()
-        ax[2].set_title("Graph Analysis")
-        ax[2].plot(1,1)
+        ax[1].set_axis_off()
+        ax[1].set_title("Graph Analysis")
+        ax[1].plot(1,1)
         
         # these are matplotlib.patch.Patch properties
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     
 
-        ax[2].text(0.05, 0.95, self.__str__() , transform=ax[2].transAxes, fontsize=10, verticalalignment='top', bbox=props)
+        ax[1].text(0.05, 0.95, self.__str__() , transform=ax[1].transAxes, fontsize=10, verticalalignment='top', bbox=props)
+        
+        
+        #### emtpy pane
+        
+        ax[2].set_axis_off()
         
 
-     
+        ####################### plot node degree
+        axis = 3
+        ax[axis].set_title("Undirected Node Degree ")
+        
+        #TODO: alter this to a numpoy array and sort by value  so that one
+        xdata = np.asarray(list(self.degree_hist.keys()))
+        ydata = np.asarray(list(self.degree_hist.values()))
+        
+       
+        
+        ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
+        
+        popt = self.power_law_coeffs['popt'] 
+        
+        xSpace = np.linspace(min(xdata), max(xdata), 100)
+        
+        ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+        
+        ax[axis].set(xlabel="x - node degree", ylabel="y - frequency")
+        ax[axis].legend()
+  
+        
+  
+        
+        ################  plot in node degree
+        axis = 4
+        ax[axis].set_title("In-Node Degree ")
+        #TODO: alter this to a numpoy array and sort by value  so that one
+        xdata = np.asarray(list(self.in_degree_hist.keys()))
+        ydata = np.asarray(list(self.in_degree_hist.values()))
+        
+
+        ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
+        
+        popt = self.in_power_law_coeffs['popt'] 
+        
+        xSpace = np.linspace(min(xdata), max(xdata), 100)
+        
+        ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+        
+        ax[axis].set(xlabel="x - node degree", ylabel="y - frequency")
+        ax[axis].legend()
+
+        
+
+
+        ################## plot in node degree
+        axis = 5
+        ax[axis].set_title("Out-Node Degree ")
+        #TODO: alter this to a numpoy array and sort by value  so that one
+        xdata = np.asarray(list(self.out_degree_hist.keys()))
+        ydata = np.asarray(list(self.out_degree_hist.values()))
+        
+
+        ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
+        
+        popt = self.out_power_law_coeffs['popt'] 
+        
+        xSpace = np.linspace(min(xdata), max(xdata), 100)
+        
+        ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+        
+        ax[axis].set(xlabel="x - node degree", ylabel="y - frequency")
+        ax[axis].legend()
+       
+        
+   
     
         
         
