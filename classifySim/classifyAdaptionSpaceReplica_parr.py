@@ -105,7 +105,7 @@ def processAdaptancePoint(a,b,replica, params):
         stats['m_pairwise_corr'] = None
         stats['m_freq'] = None
         stats['m_cvs'] = None
-        # stats['dormant'] = "not determined"
+        stats['dormant'] = "not determined"
         
         print(fnf_error)
         print("File was skipped and condition excluded from analysis.")
@@ -129,8 +129,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(100)
-    params['gi'] = float(100)
+    params['ge'] = float(60)
+    params['gi'] = float(40)
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
