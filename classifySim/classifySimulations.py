@@ -22,7 +22,9 @@ import pandas as pd
 
 def getFreq(result):
     """
-    Get mean firing frequencies of a given file behin the given path
+    Get mean firing frequencies of a given file behin the given path.
+    
+    Includes inactive neurons.
     
     Parameters
     ----------
@@ -246,6 +248,10 @@ def getBinnedSpiketrains(result):
     """
     Makes a list of binned spietrains given ids and times.
     
+    Note inactive neurons are kicked out here.
+    
+    Throws: Exception: if no two spiektrains can be found.
+    
     Parameters
     ----------
     result : dict
@@ -271,14 +277,21 @@ def getBinnedSpiketrains(result):
     # iterate through all neurons
     for node in nodes:
         t_start = 0
-        t_stop =  result['sim_time'] * 1000 # in ms
+        t_stop =  result['sim_time'] * 1000 # in msget
         times1 = times[ids == node]
-        neo_spk_train = neo.SpikeTrain(times1, units='ms', t_start=t_start, t_stop=t_stop)
-        #aclaulate and append coefficent of variation
         
-        spiketrains.append(neo_spk_train)
+        # check if spiketrain has zero spikes --> kick out inactive neuron
+        if (not (len(times1) == 0)):
+            #make spiketrain
+            neo_spk_train = neo.SpikeTrain(times1, units='ms', t_start=t_start, t_stop=t_stop)
+            #save spike train
+            spiketrains.append(neo_spk_train)
     
-    binned_spiketrains = BinnedSpikeTrain(spiketrains, bin_size=5 * quantities.ms)
+    if (len(spiketrains) < 2):
+        raise Exception(f"No two spiketrains for a: {result['a']}, b: {result['a']}, ge : {result['ge']}, gi: {result['a']} - no pairwise correlation can be computed.")
+   
+    else:
+        binned_spiketrains = BinnedSpikeTrain(spiketrains, bin_size=5 * quantities.ms)
     
     return binned_spiketrains
 
@@ -308,3 +321,8 @@ def getNameClassifyData(params,space):
     
     
     return save_name
+
+
+
+    
+    

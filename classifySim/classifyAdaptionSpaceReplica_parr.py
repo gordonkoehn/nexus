@@ -24,6 +24,7 @@ import multiprocessing
 from multiprocessing import Process, Manager
 
 import itertools
+import pickle as pi
 
 
 def processAdaptancePoint(a,b,replica, params):
@@ -89,16 +90,24 @@ def processAdaptancePoint(a,b,replica, params):
         stats['m_freq'] = m_freq
         stats['m_cvs'] = (m_cv)
         
-        # get pairwise correlations
-        binned_spiketrains = getBinnedSpiketrains(result)
-        cc_matrix = computePariwiseCorr(binned_spiketrains)
-        total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get sum of correlation, excluing self correlation (i.e. diagonal)
-        m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
-            
-        #save data
-        stats['m_pairwise_corr'] = (m_pairwise_corr)
+        try:
+            # get pairwise correlations
+            binned_spiketrains = getBinnedSpiketrains(result)
+           
+            cc_matrix = computePariwiseCorr(binned_spiketrains)
+            total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get sum of correlation, excluing self correlation (i.e. diagonal)
+            m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
+                
+            #save data
+            stats['m_pairwise_corr'] = (m_pairwise_corr)
         
+        except Exception as e:
+            stats['m_pairwise_corr'] = None
+            print(e)
+            
         stats['dormant'] =  ((len(result['ex_idx']) == 0) and  (len(result['in_idx'])==0))
+        
+        stats['fileNotFound'] = False
 
         
     except FileNotFoundError as fnf_error:
@@ -112,7 +121,7 @@ def processAdaptancePoint(a,b,replica, params):
         
         stats['fileNotFound'] = True
     
-    except pickle.UnpicklingError as unpickle_eror:
+    except pi.UnpicklingError as unpickle_eror:
         stats['m_pairwise_corr'] = None
         stats['m_freq'] = None
         stats['m_cvs'] = None
@@ -139,8 +148,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(100)
-    params['gi'] = float(100)
+    params['ge'] = float(40) # 40 or 100
+    params['gi'] = float(80) # 80 or 100
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
@@ -152,10 +161,10 @@ if __name__ == '__main__':
     
     
     # specify conductance space
-    a_min = 0
-    a_max = 25 # should be 85
-    b_min = 0
-    b_max = 25 # should be 85
+    a_min = 20
+    a_max = 50 # should be 85
+    b_min = 20
+    b_max = 50 # should be 85
     
     step = 1
     
@@ -210,7 +219,7 @@ if __name__ == '__main__':
         p['prob_Pii'] = params['prob_Pii']
         p['prob_Pie'] = params['prob_Pie']
     
-        num_cores = 10
+        num_cores = 8
     
 
         job_arguments = adaptanceSpace
