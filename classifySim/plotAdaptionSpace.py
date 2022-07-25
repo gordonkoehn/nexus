@@ -41,11 +41,11 @@ if __name__ == '__main__':
     ############### Import data ############################
     
     if doSingle :
-        classifyResults = pd.read_pickle("classData/N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_80.0_80.0_ge_40.0_40.0_rep_3.pkl")
-    
+        classifyResults = pd.read_pickle("classData/N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_25_b_0_25_gi_100.0_100.0_ge_100.0_100.0_rep_3.pkl")
+        
     if doReplica:   
-        replicaSpace = pd.read_pickle("classData/avg_N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_80.0_80.0_ge_40.0_40.0_rep_3.pkl")
-    
+        replicaSpace = pd.read_pickle("classData/avg_N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_25_b_0_25_gi_100.0_100.0_ge_100.0_100.0_rep_3.pkl")
+        
     #######################################################
     
     ################# Make Figures #######################
@@ -212,7 +212,7 @@ if __name__ == '__main__':
       # Creating figure
       fig6 = plt.figure(figsize = (7, 7))
             
-      maxFreq = 20 # Hz
+      maxFreq = 200 # Hz
         
       # syncronous
       plt.plot(replicaSpace[(replicaSpace['asynchronous']==False) & (replicaSpace['mm_freq']<=maxFreq)]['a_s'],
@@ -296,5 +296,36 @@ if __name__ == '__main__':
       
       axs[1].set(xlabel='a [nS]', ylabel='b [pA]')
    
+    
+      #######################################################################
+    ### show (a,b) grid if network is dormant or not
+     # Creating figure
+    fig6 = plt.figure(figsize = (7, 7))
       
+     # dormant
+    plt.plot(replicaSpace[(replicaSpace['all_dormant']==True)]['a_s'],
+              replicaSpace[(replicaSpace['all_dormant']==True)]['b_s'],
+              marker='o', linestyle='', label="dormant", color = "grey")
+          
+     # active
+    plt.plot(replicaSpace[(replicaSpace['all_dormant']==False)]['a_s'],
+              replicaSpace[(replicaSpace['all_dormant']==False)]['b_s'],
+              marker='o', linestyle='', label="active", color = "orange")
+    
+    # active
+    plt.plot(replicaSpace[(replicaSpace['fileNotFound']==True)]['a_s'],
+             replicaSpace[(replicaSpace['fileNotFound']==True)]['b_s'],
+             marker='o', linestyle='', label="file not found", color = "red")
+    
+    
+          
+    plt.title("Is the network spiking at all after simulation (a,b) space - replica" )
+          
+    plt.xlabel('a [nS]')
+    plt.ylabel('b [pA]')
+      
+    plt.legend()
+     # show plot
+    plt.show()
+    
     

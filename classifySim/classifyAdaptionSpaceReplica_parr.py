@@ -110,8 +110,18 @@ def processAdaptancePoint(a,b,replica, params):
         print(fnf_error)
         print("File was skipped and condition excluded from analysis.")
         
-    except Error as error:
-        print(error)
+        stats['fileNotFound'] = True
+    
+    except pickle.UnpicklingError as unpickle_eror:
+        stats['m_pairwise_corr'] = None
+        stats['m_freq'] = None
+        stats['m_cvs'] = None
+        stats['dormant'] = "not determined"
+    
+        
+        print(unpickle_eror)
+        print("File was skipped and condition excluded from analysis. - unpickle error")
+        
         
     return stats
     
@@ -129,8 +139,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(60)
-    params['gi'] = float(40)
+    params['ge'] = float(100)
+    params['gi'] = float(100)
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
@@ -143,9 +153,9 @@ if __name__ == '__main__':
     
     # specify conductance space
     a_min = 0
-    a_max = 85 # should be 85
+    a_max = 25 # should be 85
     b_min = 0
-    b_max = 85 # should be 85
+    b_max = 25 # should be 85
     
     step = 1
     
@@ -259,6 +269,7 @@ if __name__ == '__main__':
     mm_corr = []
     mm_corr_stderr = []
     all_dormant = []
+    not_found = []
     
     
     for a in np.arange(a_min,a_max+step,step):
@@ -273,6 +284,7 @@ if __name__ == '__main__':
                 mm_corr.append(replicas['m_pairwise_corr'].mean())
                 mm_corr_stderr.append(replicas['m_pairwise_corr'].std()/replicas.shape[0])
                 all_dormant.append(any(replicas["dormant"])) 
+                not_found.append(any(replicas['fileNotFound'] ==True))
                 
                 a_s.append(a)
                 b_s.append(b)
@@ -287,7 +299,8 @@ if __name__ == '__main__':
             'mm_cv_stderr':mm_cv_stderr,
             'mm_corr':mm_corr,
             'mm_corr_stderr':mm_corr_stderr,
-            'all_dormant':all_dormant}
+            'all_dormant':all_dormant,
+            'fileNotFound':not_found}
     
     replicaSpace = pd.DataFrame(dict)
     
