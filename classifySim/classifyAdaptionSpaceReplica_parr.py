@@ -97,12 +97,15 @@ def processAdaptancePoint(a,b,replica, params):
             
         #save data
         stats['m_pairwise_corr'] = (m_pairwise_corr)
+        
+        # stats['dormant'] = not (result['ex_idx'].any() and  result['in_idx'].any())
 
         
     except FileNotFoundError as fnf_error:
         stats['m_pairwise_corr'] = None
         stats['m_freq'] = None
         stats['m_cvs'] = None
+        # stats['dormant'] = "not determined"
         
         print(fnf_error)
         print("File was skipped and condition excluded from analysis.")
@@ -126,8 +129,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(40)
-    params['gi'] = float(80)
+    params['ge'] = float(100)
+    params['gi'] = float(100)
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
@@ -197,7 +200,7 @@ if __name__ == '__main__':
         p['prob_Pii'] = params['prob_Pii']
         p['prob_Pie'] = params['prob_Pie']
     
-        num_cores = 4
+        num_cores = 14
     
 
         job_arguments = adaptanceSpace
@@ -255,6 +258,7 @@ if __name__ == '__main__':
     mm_cv_stderr = []
     mm_corr = []
     mm_corr_stderr = []
+    # all_dormant = []
     
     
     for a in np.arange(a_min,a_max+step,step):
@@ -268,6 +272,7 @@ if __name__ == '__main__':
                 mm_cv_stderr.append(replicas['m_cvs'].std()/replicas.shape[0])
                 mm_corr.append(replicas['m_pairwise_corr'].mean())
                 mm_corr_stderr.append(replicas['m_pairwise_corr'].std()/replicas.shape[0])
+                # all_dormant.append(any(replicas["dormant"])) 
                 
                 a_s.append(a)
                 b_s.append(b)
@@ -281,7 +286,8 @@ if __name__ == '__main__':
             'mm_cv':mm_cv,
             'mm_cv_stderr':mm_cv_stderr,
             'mm_corr':mm_corr,
-            'mm_corr_stderr':mm_corr_stderr} 
+            'mm_corr_stderr':mm_corr_stderr}
+            # 'all_dormant':all_dormant}
     
     replicaSpace = pd.DataFrame(dict)
     
