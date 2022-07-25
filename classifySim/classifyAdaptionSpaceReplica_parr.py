@@ -79,12 +79,17 @@ def processAdaptancePoint(a,b,replica, params):
         ## analyze
         # get mean firing frequencies
         freqs = getFreq(result)
-
-        m_freq = np.mean(freqs)
+        #skip NaN frequencies - inactive neurons
+        freqs_noNaN =  freqs[np.logical_not(np.isnan(freqs))]
+        #get mean
+        m_freq = np.mean(freqs_noNaN)
         
         # get coefficient of variation
         cvs = getCVs(result)
-        m_cv = np.mean(cvs)
+        #skip NaN - inactive neurons
+        cvs_noNaN =  cvs[np.logical_not(np.isnan(cvs))]
+        #get mean
+        m_cv = np.mean(cvs_noNaN)
         
         # save the data
         stats['m_freq'] = m_freq

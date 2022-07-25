@@ -48,6 +48,7 @@ def getFreq(result):
     index, counts = np.unique(ids, return_counts=True)
     freqs = np.asarray(counts/result['sim_time']) #in Hz
     
+    
     return freqs
 
 
@@ -220,6 +221,9 @@ def getCVs(result):
         neo_spk_train = neo.SpikeTrain(times1, units=quantities.second, t_start=t_start, t_stop=t_stop)
         #aclaulate and append coefficent of variation
         cvs.append(cv(isi(neo_spk_train), nan_policy='omit'))
+    
+    #convert to numpy
+    cvs = np.array(cvs)
     
     return cvs
 
