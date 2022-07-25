@@ -98,7 +98,7 @@ def processAdaptancePoint(a,b,replica, params):
         #save data
         stats['m_pairwise_corr'] = (m_pairwise_corr)
         
-        # stats['dormant'] = not (result['ex_idx'].any() and  result['in_idx'].any())
+        stats['dormant'] =  ((len(result['ex_idx']) == 0) and  (len(result['in_idx'])==0))
 
         
     except FileNotFoundError as fnf_error:
@@ -200,7 +200,7 @@ if __name__ == '__main__':
         p['prob_Pii'] = params['prob_Pii']
         p['prob_Pie'] = params['prob_Pie']
     
-        num_cores = 14
+        num_cores = 10
     
 
         job_arguments = adaptanceSpace
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     mm_cv_stderr = []
     mm_corr = []
     mm_corr_stderr = []
-    # all_dormant = []
+    all_dormant = []
     
     
     for a in np.arange(a_min,a_max+step,step):
@@ -272,7 +272,7 @@ if __name__ == '__main__':
                 mm_cv_stderr.append(replicas['m_cvs'].std()/replicas.shape[0])
                 mm_corr.append(replicas['m_pairwise_corr'].mean())
                 mm_corr_stderr.append(replicas['m_pairwise_corr'].std()/replicas.shape[0])
-                # all_dormant.append(any(replicas["dormant"])) 
+                all_dormant.append(any(replicas["dormant"])) 
                 
                 a_s.append(a)
                 b_s.append(b)
@@ -287,7 +287,7 @@ if __name__ == '__main__':
             'mm_cv_stderr':mm_cv_stderr,
             'mm_corr':mm_corr,
             'mm_corr_stderr':mm_corr_stderr}
-            # 'all_dormant':all_dormant}
+            'all_dormant':all_dormant}
     
     replicaSpace = pd.DataFrame(dict)
     
