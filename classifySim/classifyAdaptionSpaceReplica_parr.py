@@ -166,10 +166,10 @@ if __name__ == '__main__':
     
     
     # specify conductance space
-    a_min = 20
-    a_max = 50 # should be 85
-    b_min = 20
-    b_max = 50 # should be 85
+    a_min = 0
+    a_max = 85 # should be 85
+    b_min = 0
+    b_max = 85 # should be 85
     
     step = 1
     

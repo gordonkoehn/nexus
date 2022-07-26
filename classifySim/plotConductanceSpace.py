@@ -119,11 +119,11 @@ if __name__ == '__main__':
  
     # Creating plot
     ax.scatter3D(replicaFreqSpace['ge'],replicaFreqSpace['gi'] , replicaFreqSpace['mm_freq'], color = "dimgray")
-    plt.title("conductance-mean-mean frequency space -  mean replica")
+    #plt.title("conductance-mean-mean frequency space -  mean replica")
     
     ax.set_xlabel('ge [nS]')
     ax.set_ylabel('gi [nS]')
-    ax.set_zlabel('mean mean freq. [Hz]')
+    ax.set_zlabel('replica mean freq. [Hz]')
     
 
     
@@ -133,20 +133,22 @@ if __name__ == '__main__':
     pointsPhysical = pointsPhysical[(pointsPhysical['mm_freq'] > 1) & (pointsPhysical['mm_freq'] < 20 )]
     pointsPhysical = pointsPhysical.sort_values(by = ['ge', 'gi'], ascending = [False, False], na_position = 'last')
     
-    ax.scatter3D(pointsPhysical['ge'],pointsPhysical['gi'] , pointsPhysical['mm_freq'], color = "green")
+    ax.scatter3D(pointsPhysical['ge'],pointsPhysical['gi'] , pointsPhysical['mm_freq'], color = "green", label = "physical")
     
     
     
     #zipZip = zip(condFreqSpace['ge'],condFreqSpace['gi'] , condFreqSpace['m_freqs'],zip(condFreqSpace['ge'],condFreqSpace['gi'],np.around(condFreqSpace['m_freqs'], decimals=1)))
     
-    for row in pointsPhysical.head(3).itertuples(index=False):
-        row = row._asdict()
-        #ax.text(row['ge'], row['gi'], row['mm_freq'], "("+ str(row['ge']) +", " +  str(row['gi']) +", " + str( np.around(row['mm_freq'],1)) + " )", size=7,horizontalalignment='right',verticalalignment='center')
-        ax.scatter3D(row['ge'], row['gi'], row['mm_freq'],s=40, color = "red", alpha =1)
-        #plot errorbars
-        xval, yval, zval, zerr = row['ge'], row['gi'], row['mm_freq'], row['mm_freq_stderr']
-        ax.plot([xval, xval], [yval, yval], [zval+zerr, zval-zerr], marker="_", color='k')
- 
+    # for row in pointsPhysical.head(3).itertuples(index=False):
+    #     row = row._asdict()
+    #     #ax.text(row['ge'], row['gi'], row['mm_freq'], "("+ str(row['ge']) +", " +  str(row['gi']) +", " + str( np.around(row['mm_freq'],1)) + " )", size=7,horizontalalignment='right',verticalalignment='center')
+    #     ax.scatter3D(row['ge'], row['gi'], row['mm_freq'],s=40, color = "red", alpha =1)
+    #     #plot errorbars
+    #     xval, yval, zval, zerr = row['ge'], row['gi'], row['mm_freq'], row['mm_freq_stderr']
+    #     ax.plot([xval, xval], [yval, yval], [zval+zerr, zval-zerr], marker="_", color='k')
+    
+    
+    #plt.legend()
     # show plot
     plt.show()
     #plt.savefig("Cond-m-m-Freq_condu.svg", format = 'svg', dpi=300)
