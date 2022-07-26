@@ -41,10 +41,10 @@ if __name__ == '__main__':
     ############### Import data ############################
     
     if doSingle :
-        classifyResults = pd.read_pickle("classData/N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_25_b_0_25_gi_100.0_100.0_ge_100.0_100.0_rep_3.pkl")
+        classifyResults = pd.read_pickle("classData/N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_20_50_b_20_50_gi_80.0_80.0_ge_40.0_40.0_rep_3.pkl")
         
     if doReplica:   
-        replicaSpace = pd.read_pickle("classData/avg_N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_25_b_0_25_gi_100.0_100.0_ge_100.0_100.0_rep_3.pkl")
+        replicaSpace = pd.read_pickle("classData/avg_N_100_t_10.0_probs_0.02_0.02_0.02_0.02_a_0_85_b_0_85_gi_80.0_80.0_ge_40.0_40.0_rep_3.pkl")
         
     #######################################################
     
@@ -138,12 +138,12 @@ if __name__ == '__main__':
         maxFreq = 20 # Hz
           
         # syncronous
-        plt.plot(classifyResults[(classifyResults['asynchronous']==False) & (classifyResults['m_freq']<=maxFreq)]['a'], classifyResults[(classifyResults['asynchronous']==False) & (classifyResults['m_freq']<=maxFreq)]['b'], marker='o', linestyle='', label="synchronous", color = "blue")
+        plt.plot(classifyResults[(classifyResults['asynchronous']==False) & (classifyResults['m_freq']<=maxFreq & classifyResults['m_freq']>1)]['a'], classifyResults[(classifyResults['asynchronous']==False) & (classifyResults['m_freq']<=maxFreq & classifyResults['m_freq']>1)]['b'], marker='o', linestyle='', label="synchronous", color = "blue")
               
         #asyncornous
-        plt.plot(classifyResults[(classifyResults['asynchronous']==True) & (classifyResults['m_freq']<=maxFreq)]['a'], classifyResults[(classifyResults['asynchronous'] ==True) & (classifyResults['m_freq']<=maxFreq)]['b'], marker='o', linestyle='', label="asynchronous", color = "orange")
+        plt.plot(classifyResults[(classifyResults['asynchronous']==True) & (classifyResults['m_freq']<=maxFreq & classifyResults['m_freq']>1)]['a'], classifyResults[(classifyResults['asynchronous'] ==True) & (classifyResults['m_freq']<=maxFreq & classifyResults['m_freq']>1)]['b'], marker='o', linestyle='', label="asynchronous", color = "orange")
               
-        plt.title("adaptance (a,b) space by synchrony - mean freq <20Hz" )
+        plt.title("adaptance (a,b) space by synchrony - mean freq <20Hz and above 1 Hz" )
               
         plt.xlabel('a [nS]')
         plt.ylabel('b [pA]')
@@ -183,19 +183,26 @@ if __name__ == '__main__':
       # Add data
       ## all points
       ax.scatter3D(replicaSpace['a_s'],replicaSpace['b_s'] ,
-                   replicaSpace['mm_freq'], color = "dimgray")
+                   replicaSpace['mm_freq'], color = "dimgray",alpha=0.3)
      
       ## mark (overplot) physical
-      # 1 Hz < mean freq < 20 Hz 
-      pointsPhysical = replicaSpace[(replicaSpace['mm_freq'] > 1) & (replicaSpace['mm_freq'] < 20 )]
-      ax.scatter3D(pointsPhysical['a_s'],pointsPhysical['b_s'] ,
-                   pointsPhysical['mm_freq'], color = "green", label = "physical" )
+      # 1 Hz < mean freq < 30 Hz 
+      pointsPhysical = replicaSpace[(replicaSpace['mm_freq'] > 1) & (replicaSpace['mm_freq'] < 30 )]
+      # ax.scatter3D(pointsPhysical['a_s'],pointsPhysical['b_s'] ,
+      #              pointsPhysical['mm_freq'], color = "green", label = "physical" )
       
       ## mark (overplot) asynchronous
       pointsAsynchronous =  replicaSpace[replicaSpace['asynchronous'] == True]
       
       ax.scatter3D(pointsAsynchronous['a_s'],pointsAsynchronous['b_s'] ,
-                   pointsAsynchronous['mm_freq'], color = "blue", label = "asynchronous" )
+                   pointsAsynchronous['mm_freq'], color = "blue", label = "asynchronous", alpha=0.4 )
+      
+      
+      pointsPhysicalAsync = pointsPhysical[pointsPhysical['asynchronous'] == True]
+      
+      ax.scatter3D(pointsPhysicalAsync['a_s'],pointsPhysicalAsync['b_s'] ,
+                   pointsPhysicalAsync['mm_freq'], color = "green", label = "asynchronous & physical (<30 Hz)", alpha=1 , s=45)
+      
       
 
       ax.legend()
@@ -205,6 +212,15 @@ if __name__ == '__main__':
 
       plt.show()
       
+      
+      
+      ## print out favorites
+      
+      favorites  = pointsPhysicalAsync[pointsPhysicalAsync['all_dormant'] ==False]
+      
+      print("========== Physical (<30Hz) & Asynchronous & Active Points ======")
+      
+      print(favorites[['a_s','b_s', 'mm_freq', 'mm_freq_stderr', 'mm_cv', 'mm_cv_stderr', 'mm_corr','mm_corr_stderr']])
       
       
       #######################################################################
@@ -270,14 +286,14 @@ if __name__ == '__main__':
 
       #### subplot 0
       
-      cm = plt.cm.get_cmap('RdYlBu')
+      cm = plt.cm.get_cmap('RdYlBu_r')
       x = replicaSpace['a_s']
       y = replicaSpace['b_s']
       
       z = replicaSpace['mm_cv']
       sc = axs[0].scatter(x, y, c=z, vmin=replicaSpace['mm_cv'].min(), vmax=replicaSpace['mm_cv'].max(), s=35, cmap=cm)
       
-      fig8.colorbar(sc, label= "CV", ax= axs[0])
+      fig8.colorbar(sc, label= "mean CV", ax= axs[0])
       
       axs[0].set(xlabel='a [nS]', ylabel='b [pA]')
       
@@ -292,7 +308,7 @@ if __name__ == '__main__':
       
       #axs[1].colorbar(sc, label= "CV")
       
-      fig8.colorbar(sc, label= "corr", ax= axs[1])
+      fig8.colorbar(sc, label= "mean pairwise correlation", ax= axs[1])
       
       axs[1].set(xlabel='a [nS]', ylabel='b [pA]')
    
@@ -312,10 +328,10 @@ if __name__ == '__main__':
               replicaSpace[(replicaSpace['all_dormant']==False)]['b_s'],
               marker='o', linestyle='', label="active", color = "orange")
     
-    # active
+    # file not found
     plt.plot(replicaSpace[(replicaSpace['fileNotFound']==True)]['a_s'],
-             replicaSpace[(replicaSpace['fileNotFound']==True)]['b_s'],
-             marker='o', linestyle='', label="file not found", color = "red")
+              replicaSpace[(replicaSpace['fileNotFound']==True)]['b_s'],
+              marker='o', linestyle='', label="file not found", color = "red")
     
     
           

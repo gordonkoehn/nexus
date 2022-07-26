@@ -18,8 +18,8 @@ def getRasterplot(result):
 
     ##### raster plot
     # filter for timeframe x-y ms
-    x = 1000
-    y = 2000
+    x = 5000
+    y = 6000
     
     in_time_sub = result['in_time'][((result['in_time'] > x) & (result['in_time'] < y) )]
     in_idx_sub = result['in_idx'][((result['in_time'] > x) & (result['in_time'] < y) )]
@@ -79,7 +79,7 @@ def getMeanFreqBoxplot(result):
     bp = ax7.boxplot(data, flierprops=green_diamond)
     ax7.set_xticklabels(("excitatory", "inhibitory"), size=10)
     ax7.set_xlabel('Neuron Type')
-    ax7.set_ylabel('Hz')
+    ax7.set_ylabel('mean firing frequency [Hz]')
     ax7.grid()
     
     plt.savefig("meanFreq.svg", format = 'svg', dpi=300)
@@ -96,8 +96,8 @@ if __name__ == '__main__':
     params['sim_time'] = float(10)
     params['N'] = int(100)
     #conductance fixed -> to favorite
-    params['ge'] = float(100)
-    params['gi'] = float(100)
+    params['ge'] = float(40) #40
+    params['gi'] = float(80) #80
     
     #connection probabilities
     params['prob_Pee'] = float(0.02)
@@ -106,11 +106,11 @@ if __name__ == '__main__':
     params['prob_Pie'] = float(0.02)
     
     # adpation
-    params['a'] = float(26)
-    params['b'] = float(42)
+    params['a'] = float(28)
+    params['b'] = float(21)
     
     # replica
-    params['replica']  = 1
+    params['replica']  = 3
     
   
     # get data
@@ -118,6 +118,10 @@ if __name__ == '__main__':
 
     curr_dir = getPath(params)
     
-    result = getResult(curr_dir, save_name, params)
+    result = getResult_trun(curr_dir, save_name, params)
     
     getRasterplot(result)
+    
+    getMeanFreqBoxplot(result)
+    
+  
