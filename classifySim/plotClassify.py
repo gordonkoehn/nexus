@@ -8,7 +8,8 @@ Created on Fri Jun 10 11:29:29 2022
 package containting various plotting functions for the classifyer scripts.
 """  
 
-from classifySimulations import *
+from classifySim.classifySimulations import *
+from brian2 import *
 
 #import matplotlib.pyplot as plt
 
@@ -18,8 +19,8 @@ def getRasterplot(result):
 
     ##### raster plot
     # filter for timeframe x-y ms
-    x = 5000
-    y = 6000
+    x = 0
+    y = 10000
     
     in_time_sub = result['in_time'][((result['in_time'] > x) & (result['in_time'] < y) )]
     in_idx_sub = result['in_idx'][((result['in_time'] > x) & (result['in_time'] < y) )]
@@ -52,12 +53,14 @@ def getMeanFreqBoxplot(result):
     ## individual neurons
     #fig = pyplot.figure(figsize=(9,4))
     
+    sim_time = result['sim_time']/second
+    
     index, counts = np.unique( result['ex_idx'], return_counts=True)
-    rates_Hz_ex = np.asarray(counts/params['sim_time'] )
+    rates_Hz_ex = np.asarray(counts/sim_time )
     #pyplot.scatter(rates_Hz_ex, index , s=15, c=[[.4,.4,.4]], label="RS")
     
     index, counts = np.unique(result['in_idx'], return_counts=True)
-    rates_Hz_in = np.asarray(counts/params['sim_time'])
+    rates_Hz_in = np.asarray(counts/sim_time)
     #pyplot.scatter(rates_Hz_in, index , s=15, c=[[.4,.4,.4]], label="FS")
     
     
