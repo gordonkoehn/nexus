@@ -57,6 +57,7 @@ class netInspector():
         self.out_power_law_coeffs = None
         self.in_power_law_coeffs = None
         self.small_world_coeffs = None
+        self.totalEdges = None
     
 
     def __str__(self):
@@ -78,12 +79,12 @@ class netInspector():
                 output += f"{key} : {value:2.2f}\n"
             output += "\n"
             
-            if (self.graph_type == "scale-free"):
+            # if (self.graph_type == "scale-free"):
                
-                output += "= Theoretical exponents =\n"
-                output += f"X_in = {self.x_in : 2.2f}\n"
+            #     output += "= Theoretical exponents =\n"
+            #     output += f"X_in = {self.x_in : 2.2f}\n"
                 
-                output += f"X_out = {self.x_out : 2.2f}\n"
+            #     output += f"X_out = {self.x_out : 2.2f}\n"
             
     
         
@@ -100,10 +101,12 @@ class netInspector():
         #      degree_hist=degree_hist.reindex(columns=columns_titles)
         #      output += (degree_hist.to_string(index=False))
         #      output += "\n"
-             
+        if (self.totalEdges is not None):
+            output += f"Total Edges: {self.totalEdges}\n"
                  
         if (self.node_degree_avg is not None): 
             output += f"Average Node Degree: {self.node_degree_avg:.2f}\n"
+            
         if (self.average_clustering is not None): 
             output += f"Average Clustering Coefficient: {self.average_clustering:.2f}\n"
             
@@ -139,12 +142,21 @@ class netInspector():
         self.avg_node_degree()
         self.compute_clustering()
         #self.compute_small_world_coeff()
-        self.compute_shortest_path()
-        self.power_law_fit()
+        
+        #catch exception of shortes path fails due to weakly connected graph os such
+        try: 
+            self.compute_shortest_path()
+        except Exception as err:
+            print(err)
+        
+        self.calcTotalEdges()
+        
         #self.compute_small_world_coeff()
         
         # calculate theoretical scale free in- /out- degrees
         if (self.graph_type == "scale-free"):
+            self.power_law_fit()
+            
             a = self.genParams['alpha']
             b = self.genParams['beta']
             g = self.genParams['gamma']
@@ -333,9 +345,13 @@ class netInspector():
         #axs[0].margins(0.20)
         #axs[0].axis("off")
     
+        if (self.graph_type == "random") : 
+            fig, axes = plt.subplots(nrows=1, ncols=3, figsize = (15,7))
+            
+        if (self.graph_type == "scale-free"):
+            fig, axes = plt.subplots(nrows=2, ncols=3, figsize = (15,7))
         
-    
-        fig, axes = plt.subplots(nrows=2, ncols=3, figsize = (15,7))
+        
         ax = axes.flatten()
 
         ### draw graph        
@@ -361,77 +377,113 @@ class netInspector():
         ax[1].text(0.05, 0.95, self.__str__() , transform=ax[1].transAxes, fontsize=10, verticalalignment='top', bbox=props)
         
         
-        #### emtpy pane
         
-        ax[2].set_axis_off()
         
+        
+        if (self.graph_type == "scale-free"):
+            #### emtpy pane
+            
+            ax[2].set_axis_off()
+            
+    
+            ####################### plot node degree
+            axis = 3
+            ax[axis].set_title("Undirected Node Degree ")
+            
+            #TODO: alter this to a numpoy array and sort by value  so that one
+            xdata = np.asarray(list(self.degree_hist.keys()))
+            ydata = np.asarray(list(self.degree_hist.values()))
+            
+           
+            
+            ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
+            
+            popt = self.power_law_coeffs['popt'] 
+            
+            xSpace = np.linspace(min(xdata), max(xdata), 100)
+            
+            ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+            
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+            ax[axis].legend()
+            
+            ###############  plot in node degree
+            axis = 4
+            ax[axis].set_title("In-Node Degree ")
+            #TODO: alter this to a numpoy array and sort by value  so that one
+            xdata = np.asarray(list(self.in_degree_hist.keys()))
+            ydata = np.asarray(list(self.in_degree_hist.values()))
+            
 
-        ####################### plot node degree
-        axis = 3
-        ax[axis].set_title("Undirected Node Degree ")
-        
-        #TODO: alter this to a numpoy array and sort by value  so that one
-        xdata = np.asarray(list(self.degree_hist.keys()))
-        ydata = np.asarray(list(self.degree_hist.values()))
-        
-       
-        
-        ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
-        
-        popt = self.power_law_coeffs['popt'] 
-        
-        xSpace = np.linspace(min(xdata), max(xdata), 100)
-        
-        ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
-        
-        ax[axis].set(xlabel="x - node degree", ylabel="y - frequency")
-        ax[axis].legend()
+            ax[axis].plot(xdata, ydata, '.', markersize=10)
+            
+            popt = self.in_power_law_coeffs['popt'] 
+            
+            xSpace = np.linspace(min(xdata), max(xdata), 100)
+            
+            ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+            
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+            ax[axis].legend()
+
+            
+
+
+            ################## plot in node degree
+            axis = 5
+            ax[axis].set_title("Out-Node Degree ")
+            #TODO: alter this to a numpoy array and sort by value  so that one
+            xdata = np.asarray(list(self.out_degree_hist.keys()))
+            ydata = np.asarray(list(self.out_degree_hist.values()))
+            
+
+            ax[axis].plot(xdata, ydata, '.', markersize=10)
+            
+            popt = self.out_power_law_coeffs['popt'] 
+            
+            xSpace = np.linspace(min(xdata), max(xdata), 100)
+            
+            ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
+            
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+            ax[axis].legend()
+           
+      
+        if (self.graph_type == "random"):
+            
+            ####################### plot node degree
+            axis = 2
+            ax[axis].set_title("Undirected Node Degree ")
+            
+            #TODO: alter this to a numpoy array and sort by value  so that one
+            xdata = np.asarray(list(self.degree_hist.keys()))
+            ydata = np.asarray(list(self.degree_hist.values()))
+            
+            
+            ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
+            
+    
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+           # ax[axis].legend()
   
         
-  
+    def calcTotalEdges(self):
+        """Assign total number of edges.
         
-        ################  plot in node degree
-        axis = 4
-        ax[axis].set_title("In-Node Degree ")
-        #TODO: alter this to a numpoy array and sort by value  so that one
-        xdata = np.asarray(list(self.in_degree_hist.keys()))
-        ydata = np.asarray(list(self.in_degree_hist.values()))
-        
-
-        ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
-        
-        popt = self.in_power_law_coeffs['popt'] 
-        
-        xSpace = np.linspace(min(xdata), max(xdata), 100)
-        
-        ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
-        
-        ax[axis].set(xlabel="x - node degree", ylabel="y - frequency")
-        ax[axis].legend()
-
-        
-
-
-        ################## plot in node degree
-        axis = 5
-        ax[axis].set_title("Out-Node Degree ")
-        #TODO: alter this to a numpoy array and sort by value  so that one
-        xdata = np.asarray(list(self.out_degree_hist.keys()))
-        ydata = np.asarray(list(self.out_degree_hist.values()))
-        
-
-        ax[axis].plot(xdata, ydata, '.', label='data', markersize=10)
-        
-        popt = self.out_power_law_coeffs['popt'] 
-        
-        xSpace = np.linspace(min(xdata), max(xdata), 100)
-        
-        ax[axis].plot(xSpace, func(xSpace, *popt), '-', label='fit:  y=%5.2f e^{-%5.2f} + %5.2f' % tuple(popt))
-        
-        ax[axis].set(xlabel="x - node degree", ylabel="y - frequency")
-        ax[axis].legend()
-       
-        
+        Parameters
+        ----------
+        self.G : nx.graph.Graph
+        graph to analyze
+         
+        Returns
+        -------
+        totalEdges : int
+        total number of edges in graph
+        """
+        totalEdges = np.shape(np.array(self.G.edges))[0]
+         
+        self.totalEdges = totalEdges
+            
    
     
         
