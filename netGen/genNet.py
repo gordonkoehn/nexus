@@ -60,7 +60,8 @@ def random_net(n=100,p=0.02,seed1=4812):
 def classifySynapses(G, NI=20, NE=80, inhibitoryHubs=True):
     """Generate classified (inhibitory / excitatory) graph/synapses.
     
-    Can be set to prioretize hub neurons to be inhibitory neurons.
+    Can be set to prioretize hub neurons to be inhibitory neurons based on
+    out-degree.
     
     Parameters
     ----------
@@ -80,10 +81,13 @@ def classifySynapses(G, NI=20, NE=80, inhibitoryHubs=True):
     -------
     synapses : pd.dataframe
        synapses
+       
+    neurons : pd.dataframe 
+        neuron ids network/simulation and classified for inhibitory/excitatory
     """
-    ##### classify neuron as inhibitory / excitatory
+    ##### classify neuron as inhibitory / excitatory based on out degree
     
-    neurons = pd.DataFrame(G.degree, columns=['node', 'degree'])
+    neurons = pd.DataFrame(G.out_degree, columns=['node', 'degree'])
     
     
     if inhibitoryHubs:
