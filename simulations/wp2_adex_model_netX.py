@@ -24,7 +24,6 @@ import timeit
 import argparse
 
 
-
 # custom modules
 import netGen.genNet 
 import classifySim.plotClassify
@@ -310,24 +309,36 @@ def run_sim(params):
     NeuronIDE=np.array(spikemonE.i)
     NeuronIDI=np.array(spikemonI.i)
     
+    result['NeuronIDE_ori']  = NeuronIDE
+    
+    # convert simulation indices back to network indix / node
+    NeuronIDE = pd.DataFrame(NeuronIDE, columns = ['sim_id'])
+    NeuronIDI = pd.DataFrame(NeuronIDI, columns = ['sim_id'])
+    
+    # reattach the real neuron network ids ['node']
+    neurons = params['neurons']
+    NeuronIDE = NeuronIDE.merge(neurons[neurons['type'] == 'excitatory'], how='left', left_on='sim_id', right_on='sim_id')
+    NeuronIDI = NeuronIDI.merge(neurons[neurons['type'] == 'inhibitory'], how='left', left_on='sim_id', right_on='sim_id')
+
+    result['ex_idx']= np.array(NeuronIDE['node'])
+    result['in_idx']= np.array(NeuronIDI['node'])
+
+    result['NeuronIDE'] = NeuronIDE
+
+    
+    # get timeseries of spikes
     timeE=np.array(spikemonE.t/ms) #time in ms
     timeI=np.array(spikemonI.t/ms)
-
-    # TODO: get back the network IDs - not simulation ids
-  
-
-    result['ex_idx']= NeuronIDE
-    result['in_idx']= NeuronIDI + NE
     
     result['ex_time']= timeE
     result['in_time']= timeI
     
     
     #connections
-    connected_ee = np.array((con_ee.i, con_ee.j))
-    connected_ii = np.array((con_ii.i+NE, con_ii.j+NE))
-    connected_ei = np.array((con_ei.i, con_ei.j+NE))
-    connected_ie = np.array((con_ie.i+NE, con_ie.j))
+    connected_ee = np.transpose(np.array(graph_ei[['id_from', 'id_to']]))
+    connected_ii = np.transpose(np.array(graph_ii[['id_from', 'id_to']]))
+    connected_ei = np.transpose(np.array(graph_ei[['id_from', 'id_to']]))
+    connected_ie = np.transpose(np.array(graph_ie[['id_from', 'id_to']]))
     
     #
     
@@ -369,8 +380,9 @@ if __name__ == '__main__':
     
     # generate synapses
     # get synapses    
-    S = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = True)
-
+    S, N = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = False)
+    
+    print("")
     
     params = dict()
     params['sim_time'] = float(10)
@@ -382,6 +394,7 @@ if __name__ == '__main__':
     params['gi']=float(60)
     #connection probabilities
     params['synapses'] = S
+    params['neurons'] = N
    
     
     result = run_sim(params)    

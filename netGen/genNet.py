@@ -9,6 +9,8 @@ Created on Thu Jun 16 13:06:25 2022
 
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
+
 
 # custom modules
 from netGen.analyzeNet import *
@@ -144,7 +146,8 @@ def classifySynapses(G, NI=20, NE=80, inhibitoryHubs=True):
     # assign simulation id to be used by brain2 later
     neurons['sim_id'] = neurons.groupby(['type']).cumcount()
     
-    #drop unnessary data
+    #drop unnessary data for merge, but save full neuron df as
+    neurons_full = neurons
     neurons =  neurons[["node", "sim_id"]]
     
     # add simulation neuron id for outgoing
@@ -163,7 +166,7 @@ def classifySynapses(G, NI=20, NE=80, inhibitoryHubs=True):
         synapsesMissing =  set({'ee', 'ei', 'ie', 'ii'}) - set(synapses['s_type']) 
         raise Exception(f"This network does not have all synapse types. Synapses of types: {synapsesMissing} are missing. Choose a differnt seed.")
         
-    return synapses
+    return (synapses, neurons_full)
 
 
 
@@ -240,7 +243,6 @@ if __name__ == '__main__':
     
     
     
-        
     
     
     
