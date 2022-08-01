@@ -23,6 +23,26 @@ import collections
 import pandas as pd
 
 
+def draw_graph(G: nx.classes.graph.Graph):
+    """Draw nx graph with kamada kawai layout.
+    
+    Parameters
+    ----------
+    G : networkx.classes.graph.Graph
+        Graph to analyze
+    """
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (7,7))
+    ## plotting options
+    options = {
+    'node_color': 'lightsteelblue',
+    'node_size': 250,
+    'width': 1,
+    'arrowstyle': '-|>',
+    'arrowsize': 10,
+    }  
+    nx.draw_networkx(G, ax=axes, pos=nx.kamada_kawai_layout(G), arrows=True, **options, with_labels=True,font_size =10, font_weight='regular')
+     
+
 
 class netInspector():
     """Implements a vararity of network analytics.
