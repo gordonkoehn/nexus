@@ -10,8 +10,9 @@ Created on Mon Aug  1 13:59:48 2022
 # import common stuff
 import sys
 import numpy as np
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 import pandas as pd
+import networkx as nx
 
 # import inference method
 sys.path.append('tools/spycon/src')
@@ -29,13 +30,7 @@ import adEx_util as  adEx_util
 
 
 
-
-###############################
-###### Cross-Correlation ######
-
-# Adding Cross-Correlation methods from "Methods_Viz" from Christian's code
-# Needs to work through properly !!
-
+# TODO: move to conInf scripts
 def visualization_english(Smoothed_CCG, times1: np.ndarray, times2: np.ndarray,
                   t_start: float, t_stop: float) -> (np.ndarray):
     """Compute Cross-Correlation Histrogram.
@@ -48,9 +43,9 @@ def visualization_english(Smoothed_CCG, times1: np.ndarray, times2: np.ndarray,
     return counts_ccg, counts_ccg_convolved, times_ccg 
 
 
-
+# TODO: move to conInf scripts
 def plot_ccg(coninf : Smoothed_CCG, spycon_test : ConnectivityTest, idx : int):
-    """Plot Cross-Correlation Histrogram
+    """Plot Cross-Corrogram..
     
     Parameters
     ----------
@@ -97,7 +92,79 @@ def plot_ccg(coninf : Smoothed_CCG, spycon_test : ConnectivityTest, idx : int):
     ax.set_ylim([0,np.amax(counts_ccg) + 10])
     ax.set_title('smoothed CCG')
     
-
+# TODO: move to conInf scripts´
+def plot_all_ccgs(coninf : Smoothed_CCG, spycon_test : ConnectivityTest):
+    """Plot all Cross-Corrograms.
+    
+    The CCG are only calulated for the cases where there are actual true connections.
+    
+    Parameters
+    ----------
+    coninf : SpikeConnectivityInference
+        Implementation of CCG method
+    
+    spycon_test : ConnectivityTest
+    
+    idx : int
+        arb. index of ccg pair of neurons 
+        (only pairs of edges where a true edge exists)
+        
+    Returns
+    -------
+    None - but, plot
+    """
+    edges = np.where(np.logical_and(spycon_test.marked_edges[:,2] != 0, np.logical_not(np.isnan(spycon_test.marked_edges[:,2]))))[0]
+  
+    no_edges = len(edges)
+    #no_edges = 23
+    
+    rows = int(no_edges/10)+1
+    columns = 10
+    
+    fig, axs = plt.subplots(rows,columns, figsize=(10, 20), facecolor='w', edgecolor='k')
+    fig.subplots_adjust(hspace = .5, wspace=.05)
+    #fig.patch.set_facecolor('#E0E0E0')
+    
+    axs = axs.ravel()
+    
+    for i in range(rows*columns):
+        axs[i].axis('off')
+    
+    for i in range(no_edges):    
+        ## get edges and ids
+        # get rows/indices of marked_edges that contain connections
+        edges = np.where(np.logical_and(spycon_test.marked_edges[:,2] != 0, np.logical_not(np.isnan(spycon_test.marked_edges[:,2]))))[0]
+        # select arbitrary edge by order in marked edges
+        idx = i
+        # get pre- and post-synaptic neuron to do the CCH for
+        id1, id2 = spycon_test.marked_edges[edges[idx],:2]
+    
+        ## run corr correlation 
+        times1, times2 = spycon_test.times[spycon_test.ids == id1], spycon_test.times[spycon_test.ids == id2]
+        counts_ccg, counts_ccg_convolved, times_ccg = visualization_english(coninf, times1, times2, 0, 3600)
+    
+        # plot
+        axs[i].axis('off')
+    
+        
+        axs[i].fill_between([coninf.default_params['syn_window'][0] * 1e3, coninf.default_params['syn_window'][1] * 1e3], 0, np.amax(counts_ccg) + 20, color='C0', alpha=.5)
+        axs[i].bar(times_ccg * 1e3, counts_ccg, width=coninf.default_params['binsize'] * 1e3, color='k', label='Data CCG')
+        axs[i].plot(times_ccg * 1e3, counts_ccg_convolved, 'C0', label='Smoothed CCG', lw=2)
+        axs[i].vlines([0], 0, np.amax(counts_ccg) + 20, lw=2, ls='--', color='gray')
+        #axs[i].hlines(40,-12,-8, 'r')
+        #axs[i].text(-10, 47, '5 ms', color='r')
+        #ax.legend()
+        axs[i].set_xlim([-15,15])
+        axs[i].set_xlabel('Time [ms]')
+        axs[i].set_ylabel('Spike count')
+        axs[i].set_ylim([0,np.amax(counts_ccg) + 10])
+        axs[i].set_title(f'{int(id1)} -->{int(id2)}', fontsize=8)
+        
+        #print(np.amax(counts_ccg) + 10)
+        
+        
+    plt.savefig('all_CCGs.pdf')  
+        #plt.ion()
 
 
 ###############################################################################
