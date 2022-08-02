@@ -409,7 +409,13 @@ def classifyResult(result):
     except Exception as e:
         stats['m_pairwise_corr'] = None
         print(e)
-    stats['dormant'] =  ((len(result['ex_idx']) == 0) and  (len(result['in_idx'])==0))
+    
+    try:
+        stats['dormant'] =  ((len(result['ex_idx']) == 0) and  (len(result['in_idx'])==0))
+    except TypeError as e:
+        print(e)
+        print("Could not determine if dormant or not.")
+        
     # Recurrent if there is activity after 9900 ms
     y = 9900 
     stats['recurrent'] = (len(result['in_time'][(result['in_time'] > y )]) > 0) & (len(result['ex_time'][(result['ex_time'] > y )]) > 0)

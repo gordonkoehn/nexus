@@ -29,7 +29,7 @@ def getRasterplot(result):
     ex_idx_sub = result['ex_idx'][((result['ex_time'] > x) & (result['ex_time'] < y) )]
     
     #plot
-    Fig=plt.figure(figsize=(9,7))
+    Fig=plt.figure(figsize=(7,5))
     plt.subplots_adjust(hspace=0.7, wspace=0.4)
     
    # matplotlib.rc('xtick', labelsize=15) 
@@ -73,7 +73,7 @@ def getMeanFreqBoxplot(result):
     #pyplot.show()
     
     #### per neuron group
-    fig7, ax7 = plt.subplots()
+    fig7, ax7 = plt.subplots(figsize = (5,5))
     
     #data = np.concatenate((rates_Hz_ex, rates_Hz_in))
     green_diamond = dict(markerfacecolor='g', marker='D')

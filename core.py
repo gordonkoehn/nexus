@@ -13,6 +13,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
 import networkx as nx
+import os
 
 # import inference method
 sys.path.append('tools/spycon/src')
@@ -152,10 +153,14 @@ if __name__ == '__main__':
     print(f"Network dormant: {netActivityStats['dormant']}")
     if netActivityStats['dormant']: 
         raise Exception("Network is dormant - not point to continue")
+        print("Restarting Run")
+        os.system("python core.py")
         
     print(f"Network is recurrent: {netActivityStats['recurrent']}")
     if not netActivityStats['recurrent']: 
         raise Exception("Network is not recurrent - not point to continue")
+        print("Restarting Run")
+        os.system("python core.py")
     
     print(f"Mean firing freq [Hz]: {netActivityStats['m_freq'] : 2.1f}")
     print(f"Mean pairwise-correlation: {netActivityStats['m_pairwise_corr'] : 2.2f}")
