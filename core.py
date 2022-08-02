@@ -26,9 +26,14 @@ import simulations.wp2_adex_model_netX
 import conInf.output 
 import conInf.analyser
 import classifySim
+import netGen
 
 sys.path.append('tools')
-import adEx_util as  adEx_util
+import adEx_util
+
+#disable warings -  mostly warning about usage of pandas and brian2
+import warnings
+warnings.filterwarnings("ignore")
 
 
 
@@ -42,35 +47,8 @@ if __name__ == '__main__':
     print("==================================================================")
     print("===                  Welcome to Nexus                          ===")
     print("==================================================================\n")
-    
-    # print("Instructions:\n")
-    # print("1) specify Network Generation\n2) specify AdEx Model \n--> Run Simulation\n")
-    
-    # ###########################################################################
-    
-    # print("=== Network Generation ===") 
-    
-    # #### graph type
-    # graphType_s = {'s','S','scale', 'scale-free', 'sf'}
-    # graphType_r = {'r','R','random'}
-    
-    # graphType = None
-    
-    # graphType_in = input("Specify the graph type - scale-free / random (s/r): ")
-        
-    # if (graphType in graphType_s):
-    #     graphType = "scale-free"
-    # elif (graphType in graphType_r):
-    #     graphType = "random"
-    # else:
-    #     graphType = "random"
-    #     print("Graph type not recognized, choose default: " + graphType)
-        
-    # #### choose graph parameters
-    
-    # if (graphType == "scale-free"):
-        
-    
+
+    plt.close('all') # close all opd plots
         
    ############################################################################
    ######### Generate Network
@@ -84,7 +62,7 @@ if __name__ == '__main__':
     
     graphType = ""
     
-    seed1 = 34
+    seed1 = 576
     
 
     if scaleFreeGraph: 
@@ -114,16 +92,19 @@ if __name__ == '__main__':
         G = netGen.genNet.random_net(n,p,seed1)
     
     ## printout graph proberties choosen
-    print("= Graph Properties: = ")
-    print("type: " + graphType)
-    print("Generation Parameters: " + str(genParams))
+    print("= True Graph Properties: = ")
+    # print("type: " + graphType)
+    # print("Generation Parameters: " + str(genParams))
     
     ### Stats ###
-    #TODO: add graph stats (node degree, shortes path....) 
+    GInspector_true = netGen.analyzeNet.netInspector(G, graphType, genParams)
+    GInspector_true.eval_all()
+    print(GInspector_true)
     
     ### Plot ###
     ## plot infered graph 
-    netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph")
+    nodePosition_G_true = nx.kamada_kawai_layout(G)
+    netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph", nodePos = nodePosition_G_true)
 
     ##########################################################################
     ######### Run Simulation
@@ -131,7 +112,7 @@ if __name__ == '__main__':
     
     # generate synapses
     # get synapses    
-    S, N = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = True)
+    S, N = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = False)
     
     
     params = dict()
@@ -159,22 +140,32 @@ if __name__ == '__main__':
     
     print('simulation successfully finished for ' + result['save_name'])
     
+    # trunicate the result - discard the stimulation period
+    result = classifySim.classifySimulations.truncResult(result)
+    
     ###########################################################################
     ##### Classify Network Activity
     print("\n=== Classify Network Activity ===\n")
-
     
+    #calculate network stats
+    netActivityStats = classifySim.classifySimulations.classifyResult(result)
+    print(f"Network dormant: {netActivityStats['dormant']}")
+    if netActivityStats['dormant']: 
+        raise Exception("Network is dormant - not point to continue")
+        
+    print(f"Network is recurrent: {netActivityStats['recurrent']}")
+    if not netActivityStats['recurrent']: 
+        raise Exception("Network is not recurrent - not point to continue")
     
-    # TODO: Calculate mean firing freq
-    # TODO: claculate corr
-    # TODO: clacualte COV
-    
+    print(f"Mean firing freq [Hz]: {netActivityStats['m_freq'] : 2.1f}")
+    print(f"Mean pairwise-correlation: {netActivityStats['m_pairwise_corr'] : 2.2f}")
+    print(f"Mean coefficient of variation: {netActivityStats['m_cv'] : 2.1f}")
+    print(f"Asynchronous: {netActivityStats['asynchronous']}")
     ### Plot ###
     ## Rasterplot
     classifySim.plotClassify.getRasterplot(result)
     ## Mean Firing Freq
     classifySim.plotClassify.getMeanFreqBoxplot(result)
-    
     
     ##########################################################################
     ######### Connectivity Inference
@@ -203,7 +194,7 @@ if __name__ == '__main__':
                            'gauss_std': 0.01,
                            'syn_window': (0,5e-3),
                            'ccg_tau': 20e-3,
-                           'alpha': .01}
+                           'alpha': .005} # default is 0.01
     
     print("inference parameters:")
     print(str(inference_params))
@@ -221,17 +212,28 @@ if __name__ == '__main__':
     spycon_result, test_metrics = spycon_test.run_test(coninf, only_metrics=False, parallel=True,)
     print("succesfully infered the functional connectivity")
     
-    # get infered graph
+    # get infered graph + including thresholding by the significance value
     G_infered_nx = conInf.analyser.getInferedNxGraph(spycon_result)
   
     ### get theshold    
-    print("Threshold: " + str(spycon_result.threshold))
+    print(f"Threshold: {spycon_result.threshold : .2f}")
     print(f"No of infered edged: {len(G_infered_nx.edges)}")
     
 
     #### Plot ####
     ## plot infered graph 
-    netGen.analyzeNet.draw_graph(G_infered_nx, title = "Inferred Graph")
+    # position of nodes is fixed to that of the groud true
+    netGen.analyzeNet.draw_graph(G_infered_nx, title = "Inferred Graph" , nodePos = nodePosition_G_true)
+
+    ## printout graph proberties choosen
+    print("\n= Inferred Graph Properties: =\n ")
+    # calculate
+    graphType = "inferred"
+    genParams = {}
+    GInspector_infered = netGen.analyzeNet.netInspector(G_infered_nx, graphType, genParams)
+    GInspector_infered.eval_all()
+    print(GInspector_infered)
+      
 
     ## plot ROC
     conInf.output.plot_ROC(test_metrics)    
@@ -241,8 +243,6 @@ if __name__ == '__main__':
     
     ## plot single CCG
     #conInf.output.plot_ccg(coninf, spycon_test, 4)
-    
-    
     
     
     ###########################################################################

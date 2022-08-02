@@ -48,7 +48,7 @@ def processAdaptancePoint(a,b,replica, params):
          replicaNo as 'replicaNo'
          mean firing frequency as 'm_freq';
          mean pairwise correlation as 'm_pairwise_corr';
-         mean coefficient of variation as 'm_'
+         mean coefficient of variation as 'm_cv'
     
     
     """   

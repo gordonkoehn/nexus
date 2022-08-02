@@ -23,7 +23,7 @@ import collections
 import pandas as pd
 
 
-def draw_graph(G: nx.classes.graph.Graph, title = None):
+def draw_graph(G: nx.classes.graph.Graph, title = None, nodePos = None):
     """Draw nx graph with kamada kawai layout.
     
     Parameters
@@ -33,8 +33,10 @@ def draw_graph(G: nx.classes.graph.Graph, title = None):
         
     (title =  None : str)
         (optional argument to put title on plot)
+        
+    (nodePos = none: nx.drawing.layout)
     """
-    fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (7,7))
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (5,5))
     ## plotting options
     options = {
     'node_color': 'lightsteelblue',
@@ -43,7 +45,13 @@ def draw_graph(G: nx.classes.graph.Graph, title = None):
     'arrowstyle': '-|>',
     'arrowsize': 10,
     }  
-    nx.draw_networkx(G, ax=axes, pos=nx.kamada_kawai_layout(G), arrows=True, **options, with_labels=True,font_size =10, font_weight='regular')
+    
+    if nodePos is None:
+        nodePosition = nx.kamada_kawai_layout(G)
+    else:
+        nodePosition = nodePos
+        
+    nx.draw_networkx(G, ax=axes, pos=nodePosition, arrows=True, **options, with_labels=True,font_size =10, font_weight='regular')
     
     if title is not None:
         axes.set_title(title)
@@ -92,7 +100,6 @@ class netInspector():
         Returns
         -------
         None.
-
         """
         output = ""
         
@@ -111,8 +118,6 @@ class netInspector():
                 
             #     output += f"X_out = {self.x_out : 2.2f}\n"
             
-    
-        
         # if (self.degree_sequence is not None):
         #     output += f"Degree sequence\n {self.degree_sequence} \n\n"
             
@@ -126,6 +131,7 @@ class netInspector():
         #      degree_hist=degree_hist.reindex(columns=columns_titles)
         #      output += (degree_hist.to_string(index=False))
         #      output += "\n"
+        
         if (self.totalEdges is not None):
             output += f"Total Edges: {self.totalEdges}\n"
                  
@@ -152,7 +158,6 @@ class netInspector():
             output += f"Sigma: {self.power_law_coeffs['sigma']: 2.3f}\n"
             output += f"Gamma: {self.power_law_coeffs['gamma']: 2.3f}\n"
             
-        
         return output
     
     

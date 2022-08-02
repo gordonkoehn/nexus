@@ -46,11 +46,12 @@ def getInferedNxGraph(spycon_result : SpikeConnectivityResult):
         isEdge=np.where(
             G_infered['weight'] > spycon_result.threshold,
             True,False))
-    print("No of edges: " + str(len(G_infered[G_infered['isEdge'] == True])))
     #get only significant edges
     G_infered_sig = G_infered[G_infered['isEdge'] == True]
-    G_infered_sig.id_from.astype(int)
-    G_infered_sig.id_to.astype(int)
-    G_infered_nx = nx.from_pandas_edgelist(G_infered_sig, source='id_from', target='id_to')
+    #fix '/ make certain that the labels are still integers
+    G_infered_sig.id_from =  G_infered_sig.id_from.astype(int)
+    G_infered_sig.id_to = G_infered_sig.id_to.astype(int)
+    
+    G_infered_nx = nx.from_pandas_edgelist(G_infered_sig, source='id_from', target='id_to',create_using=nx.DiGraph())
     
     return G_infered_nx

@@ -183,6 +183,40 @@ def getResult_trun(curr_dir, save_name, params):
     
     return result
 
+def truncResult(result):
+    """
+    Trunicate the first 1000 ms to avoid including the driven period.
+    
+    Parameters
+    ----------
+    result: dict
+        as defined by adex scripts
+        
+    Returns
+    -------
+    result : dict
+        see wp2_adex_model_script.py
+    
+    """      
+    # trunicate the first 1000ms
+    y = 1000
+    
+    result_temp = dict()
+    
+    result_temp['in_time'] = result['in_time'][(result['in_time'] > y )]
+    result_temp['in_idx'] = result['in_idx'][(result['in_time'] > y)]
+    
+    result_temp['ex_time'] = result['ex_time'][(result['ex_time'] > y)]
+    result_temp['ex_idx'] = result['ex_idx'][(result['ex_time'] > y)]
+    
+    #write back to actual output dict
+    result['in_time'] =  result_temp['in_time']
+    result['in_idx'] =  result_temp['in_idx']
+    
+    result['ex_time'] =  result_temp['ex_time']
+    result['ex_idx'] =  result_temp['ex_idx']
+    
+    return result
 
     
 def getCVs(result):
@@ -300,8 +334,7 @@ def getBinnedSpiketrains(result):
     return binned_spiketrains
 
 def getNameClassifyData(params,space):
-    """
-    makes save name for the classifyData resulst based on the choosen search space.
+    """Make save name for the classifyData resulst based on the choosen search space.
     
     Parameters
     ----------
@@ -315,9 +348,6 @@ def getNameClassifyData(params,space):
     save_name : str
         recommended save name
     """  
-    
-
-    
     save_name = '_'.join(["N",str(params['N']), "t",str(params['sim_time']) ]) + '_'
     save_name += '_'.join(["probs",str(params['prob_Pee']),str(params['prob_Pei']), str(params['prob_Pii']), str(params['prob_Pie']) ])
     save_name += '_' + '_'.join(["a", str(space['aMin']), str(space['aMax']), "b", str(space['bMin']), str(space['bMax']), "gi", str(space['giMin']),str(space['giMax']), "ge", str(space['geMin']),str(space['geMax']) ,"rep",str(space['replica'])])
@@ -325,6 +355,73 @@ def getNameClassifyData(params,space):
     
     
     return save_name
+
+def classifyResult(result):
+    """Calculate the mean coeffieiencet of varriation, pairwirse correlation and more given a result of a of an adex simulation.
+    
+    Parameters
+    ----------
+    result : dict
+       adEx simulation results
+       
+    Returns
+    -------
+    stats : dict
+        stats['m_freq'] as mean firing freq
+        stats['m_cv'] as mean coeff. of varriation
+        stats['m_pairwise_corr'] as the mean pariwise correlation
+        stats['dormant'] if simulation stricly dormant (no activity of ex/inhibitory)
+        stats['recurrent'] if there is still ex. and in. activityafter 9900ms#
+        stats['asynchronous'] classification of simulation
+    """
+    ## analyze
+    # get mean firing frequencies
+    freqs = getFreq(result)
+    #skip NaN frequencies - inactive neurons
+    freqs_noNaN =  freqs[np.logical_not(np.isnan(freqs))]
+    #get mean
+    m_freq = np.mean(freqs_noNaN)
+    
+    # get coefficient of variation
+    cvs = getCVs(result)
+    #skip NaN - inactive neurons
+    cvs_noNaN =  cvs[np.logical_not(np.isnan(cvs))]
+    #get mean
+    m_cv = np.mean(cvs_noNaN)
+    
+    # results dictionary to return
+    stats = dict()
+    # save the data
+    stats['m_freq'] = m_freq
+    stats['m_cv'] = (m_cv)
+    
+    try:
+        # get pairwise correlations
+        binned_spiketrains = getBinnedSpiketrains(result)
+       
+        cc_matrix = computePariwiseCorr(binned_spiketrains)
+        total_pairwise_corr =cc_matrix.sum() - cc_matrix.trace() # get sum of correlation, excluing self correlation (i.e. diagonal)
+        m_pairwise_corr = total_pairwise_corr / (cc_matrix.shape[0]*cc_matrix.shape[1] - cc_matrix.shape[1]) #  note the lengeth of the diagonal of a NxN matrix is always N
+            
+        #save data
+        stats['m_pairwise_corr'] = (m_pairwise_corr)
+    
+    except Exception as e:
+        stats['m_pairwise_corr'] = None
+        print(e)
+    stats['dormant'] =  ((len(result['ex_idx']) == 0) and  (len(result['in_idx'])==0))
+    # Recurrent if there is activity after 9900 ms
+    y = 9900 
+    stats['recurrent'] = (len(result['in_time'][(result['in_time'] > y )]) > 0) & (len(result['ex_time'][(result['ex_time'] > y )]) > 0)
+    try:
+        stats['asynchronous'] =  ((stats['m_cv'] > 1) & (stats['m_pairwise_corr'] < 0.1))
+    except TypeError as e:
+        print(e)
+        print("Possibly mean CV or Corr could not be calculated.")
+        
+    return stats
+    
+    
 
 
 

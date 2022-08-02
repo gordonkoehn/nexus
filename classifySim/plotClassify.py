@@ -19,8 +19,8 @@ def getRasterplot(result):
 
     ##### raster plot
     # filter for timeframe x-y ms
-    x = 0
-    y = 10000
+    x = 5000
+    y = 6000
     
     in_time_sub = result['in_time'][((result['in_time'] > x) & (result['in_time'] < y) )]
     in_idx_sub = result['in_idx'][((result['in_time'] > x) & (result['in_time'] < y) )]

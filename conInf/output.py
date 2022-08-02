@@ -186,7 +186,7 @@ def plot_ROC(test_metrics : pd.DataFrame):
     -------
     plot
     """
-    fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (7,7))
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (5,5))
     
     fpr, tpr, auc = tuple(test_metrics[['fpr', 'tpr', 'auc']].to_numpy()[0])
     axes.plot(fpr, tpr)
