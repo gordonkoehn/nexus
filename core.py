@@ -25,6 +25,7 @@ import netGen.genNet
 import simulations.wp2_adex_model_netX
 import conInf.output 
 import conInf.analyser
+import classifySim
 
 sys.path.append('tools')
 import adEx_util as  adEx_util
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     
     graphType = ""
     
-    seed1 = 4712
+    seed1 = 34
     
 
     if scaleFreeGraph: 
@@ -116,6 +117,13 @@ if __name__ == '__main__':
     print("= Graph Properties: = ")
     print("type: " + graphType)
     print("Generation Parameters: " + str(genParams))
+    
+    ### Stats ###
+    #TODO: add graph stats (node degree, shortes path....) 
+    
+    ### Plot ###
+    ## plot infered graph 
+    netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph")
 
     ##########################################################################
     ######### Run Simulation
@@ -153,16 +161,24 @@ if __name__ == '__main__':
     
     ###########################################################################
     ##### Classify Network Activity
+    print("\n=== Classify Network Activity ===\n")
+
     
     
     # TODO: Calculate mean firing freq
     # TODO: claculate corr
     # TODO: clacualte COV
     
+    ### Plot ###
+    ## Rasterplot
+    classifySim.plotClassify.getRasterplot(result)
+    ## Mean Firing Freq
+    classifySim.plotClassify.getMeanFreqBoxplot(result)
+    
     
     ##########################################################################
     ######### Connectivity Inference
-    print("\n=== Connectivity Inference ===")
+    print("\n=== Connectivity Inference ===\n")
     print("infer functional connectivity...")
     
     #############################
@@ -205,13 +221,16 @@ if __name__ == '__main__':
     spycon_result, test_metrics = spycon_test.run_test(coninf, only_metrics=False, parallel=True,)
     print("succesfully infered the functional connectivity")
     
+    # get infered graph
+    G_infered_nx = conInf.analyser.getInferedNxGraph(spycon_result)
+  
     ### get theshold    
     print("Threshold: " + str(spycon_result.threshold))
-    
-    G_infered_nx = conInf.analyser.getInferedNxGraph(spycon_result)
-    
     print(f"No of infered edged: {len(G_infered_nx.edges)}")
+    
 
+    #### Plot ####
+    ## plot infered graph 
     netGen.analyzeNet.draw_graph(G_infered_nx, title = "Inferred Graph")
 
     ## plot ROC
@@ -222,3 +241,10 @@ if __name__ == '__main__':
     
     ## plot single CCG
     #conInf.output.plot_ccg(coninf, spycon_test, 4)
+    
+    
+    
+    
+    ###########################################################################
+    ##################### CLOSE ALL PLOTS #####################################
+    # plt.close('all')
