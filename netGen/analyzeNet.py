@@ -23,13 +23,16 @@ import collections
 import pandas as pd
 
 
-def draw_graph(G: nx.classes.graph.Graph):
+def draw_graph(G: nx.classes.graph.Graph, title = None):
     """Draw nx graph with kamada kawai layout.
     
     Parameters
     ----------
     G : networkx.classes.graph.Graph
         Graph to analyze
+        
+    (title =  None : str)
+        (optional argument to put title on plot)
     """
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (7,7))
     ## plotting options
@@ -41,7 +44,9 @@ def draw_graph(G: nx.classes.graph.Graph):
     'arrowsize': 10,
     }  
     nx.draw_networkx(G, ax=axes, pos=nx.kamada_kawai_layout(G), arrows=True, **options, with_labels=True,font_size =10, font_weight='regular')
-     
+    
+    if title is not None:
+        axes.set_title(title)
 
 
 class netInspector():

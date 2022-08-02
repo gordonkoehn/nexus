@@ -23,148 +23,12 @@ from spycon_tests import load_test, ConnectivityTest
 # custom modules
 import netGen.genNet
 import simulations.wp2_adex_model_netX
+import conInf.output 
+import conInf.analyser
 
 sys.path.append('tools')
 import adEx_util as  adEx_util
 
-
-
-
-# TODO: move to conInf scripts
-def visualization_english(Smoothed_CCG, times1: np.ndarray, times2: np.ndarray,
-                  t_start: float, t_stop: float) -> (np.ndarray):
-    """Compute Cross-Correlation Histrogram.
-
-    # Adding Cross-Correlation methods from "Methods_Viz" from Christian's code
-    """
-    kernel = Smoothed_CCG.partially_hollow_gauss_kernel()
-    counts_ccg, counts_ccg_convolved, times_ccg = Smoothed_CCG.compute_ccg(times1, times2, kernel, t_start, t_stop)
-    
-    return counts_ccg, counts_ccg_convolved, times_ccg 
-
-
-# TODO: move to conInf scripts
-def plot_ccg(coninf : Smoothed_CCG, spycon_test : ConnectivityTest, idx : int):
-    """Plot Cross-Corrogram..
-    
-    Parameters
-    ----------
-    coninf : SpikeConnectivityInference
-        Implementation of CCG method
-    
-    spycon_test : ConnectivityTest
-    
-    idx : int
-        arb. index of ccg pair of neurons 
-        (only pairs of edges where a true edge exists)
-        
-    Returns
-    -------
-    None - but, plot
-       
-    """
-    ## get edges and ids
-    # get rows/indices of marked_edges that contain connections
-    edges = np.where(np.logical_and(spycon_test.marked_edges[:,2] != 0, np.logical_not(np.isnan(spycon_test.marked_edges[:,2]))))[0]
-    # select arbitrary edge by order in marked edges
-    idx = 4
-    # get pre- and post-synaptic neuron to do the CCH for
-    id1, id2 = spycon_test.marked_edges[edges[idx],:2]
-    
-    ## run corr correlation 
-    times1, times2 = spycon_test.times[spycon_test.ids == id1], spycon_test.times[spycon_test.ids == id2]
-    counts_ccg, counts_ccg_convolved, times_ccg = visualization_english(coninf, times1, times2, 0, 3600)
-    
-    # plot
-    fig = pyplot.figure()
-    ax = pyplot.subplot(111)
-    ax.axis('off')
-    ax.fill_between([coninf.default_params['syn_window'][0] * 1e3, coninf.default_params['syn_window'][1] * 1e3], 0, np.amax(counts_ccg) + 20, color='C0', alpha=.5)
-    ax.bar(times_ccg * 1e3, counts_ccg, width=coninf.default_params['binsize'] * 1e3, color='k', label='Data CCG')
-    ax.plot(times_ccg * 1e3, counts_ccg_convolved, 'C0', label='Smoothed CCG', lw=2)
-    ax.vlines([0], 0, np.amax(counts_ccg) + 20, lw=2, ls='--', color='gray')
-    ax.hlines(40,-12,-8, 'r')
-    ax.text(-10, 47, '5 ms', color='r')
-    #ax.legend()
-    ax.set_xlim([-15,15])
-    ax.set_xlabel('Time [ms]')
-    ax.set_ylabel('Spike count')
-    ax.set_ylim([0,np.amax(counts_ccg) + 10])
-    ax.set_title('smoothed CCG')
-    
-# TODO: move to conInf scripts´
-def plot_all_ccgs(coninf : Smoothed_CCG, spycon_test : ConnectivityTest):
-    """Plot all Cross-Corrograms.
-    
-    The CCG are only calulated for the cases where there are actual true connections.
-    
-    Parameters
-    ----------
-    coninf : SpikeConnectivityInference
-        Implementation of CCG method
-    
-    spycon_test : ConnectivityTest
-    
-    idx : int
-        arb. index of ccg pair of neurons 
-        (only pairs of edges where a true edge exists)
-        
-    Returns
-    -------
-    None - but, plot
-    """
-    edges = np.where(np.logical_and(spycon_test.marked_edges[:,2] != 0, np.logical_not(np.isnan(spycon_test.marked_edges[:,2]))))[0]
-  
-    no_edges = len(edges)
-    #no_edges = 23
-    
-    rows = int(no_edges/10)+1
-    columns = 10
-    
-    fig, axs = plt.subplots(rows,columns, figsize=(10, 20), facecolor='w', edgecolor='k')
-    fig.subplots_adjust(hspace = .5, wspace=.05)
-    #fig.patch.set_facecolor('#E0E0E0')
-    
-    axs = axs.ravel()
-    
-    for i in range(rows*columns):
-        axs[i].axis('off')
-    
-    for i in range(no_edges):    
-        ## get edges and ids
-        # get rows/indices of marked_edges that contain connections
-        edges = np.where(np.logical_and(spycon_test.marked_edges[:,2] != 0, np.logical_not(np.isnan(spycon_test.marked_edges[:,2]))))[0]
-        # select arbitrary edge by order in marked edges
-        idx = i
-        # get pre- and post-synaptic neuron to do the CCH for
-        id1, id2 = spycon_test.marked_edges[edges[idx],:2]
-    
-        ## run corr correlation 
-        times1, times2 = spycon_test.times[spycon_test.ids == id1], spycon_test.times[spycon_test.ids == id2]
-        counts_ccg, counts_ccg_convolved, times_ccg = visualization_english(coninf, times1, times2, 0, 3600)
-    
-        # plot
-        axs[i].axis('off')
-    
-        
-        axs[i].fill_between([coninf.default_params['syn_window'][0] * 1e3, coninf.default_params['syn_window'][1] * 1e3], 0, np.amax(counts_ccg) + 20, color='C0', alpha=.5)
-        axs[i].bar(times_ccg * 1e3, counts_ccg, width=coninf.default_params['binsize'] * 1e3, color='k', label='Data CCG')
-        axs[i].plot(times_ccg * 1e3, counts_ccg_convolved, 'C0', label='Smoothed CCG', lw=2)
-        axs[i].vlines([0], 0, np.amax(counts_ccg) + 20, lw=2, ls='--', color='gray')
-        #axs[i].hlines(40,-12,-8, 'r')
-        #axs[i].text(-10, 47, '5 ms', color='r')
-        #ax.legend()
-        axs[i].set_xlim([-15,15])
-        axs[i].set_xlabel('Time [ms]')
-        axs[i].set_ylabel('Spike count')
-        axs[i].set_ylim([0,np.amax(counts_ccg) + 10])
-        axs[i].set_title(f'{int(id1)} -->{int(id2)}', fontsize=8)
-        
-        #print(np.amax(counts_ccg) + 10)
-        
-        
-    plt.savefig('all_CCGs.pdf')  
-        #plt.ion()
 
 
 ###############################################################################
@@ -337,33 +201,24 @@ if __name__ == '__main__':
     # define test
     spycon_test = ConnectivityTest("spycon_test",times_in_sec, ids, nodes, marked_edges)
     # run test
+    print("Infering functional conncectivity...")#
     spycon_result, test_metrics = spycon_test.run_test(coninf, only_metrics=False, parallel=True,)
-    
     print("succesfully infered the functional connectivity")
     
     ### get theshold    
     print("Threshold: " + str(spycon_result.threshold))
     
-    ### get infered thesholde graph
-    G_infered = pd.DataFrame(spycon_result.stats, columns=['id_from', 'id_to', 'weight'])
-    G_infered = G_infered.assign(
-        isEdge=np.where(
-            G_infered['weight'] > spycon_result.threshold,
-            True,False))
-    print("No of edges: " + str(len(G_infered[G_infered['isEdge'] == True])))
-    #get only significant edges
-    G_infered_sig = G_infered[G_infered['isEdge'] == True]
-    G_infered_sig.id_from.astype(int)
-    G_infered_sig.id_to.astype(int)
-    G_infered_nx = nx.from_pandas_edgelist(G_infered_sig, source='id_from', target='id_to')
-
-
-    fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (7,7))
+    G_infered_nx = conInf.analyser.getInferedNxGraph(spycon_result)
     
-    fpr, tpr, auc = tuple(test_metrics[['fpr', 'tpr', 'auc']].to_numpy()[0])
-    axes.plot(fpr, tpr)
-    axes.plot([0,1],[0,1], color='gray', linestyle='--')
-    axes.text(.7,.0,'AUC =%.3f' %auc)
-    axes.set(xlabel="False positive rate", ylabel="ETrue positive rate")
-    axes.set_title('Receiver Operating Curve')
-    axes.show()
+    print(f"No of infered edged: {len(G_infered_nx.edges)}")
+
+    netGen.analyzeNet.draw_graph(G_infered_nx, title = "Inferred Graph")
+
+    ## plot ROC
+    conInf.output.plot_ROC(test_metrics)    
+    
+    ## plot all CCGs - for true edges
+    conInf.output.plot_all_ccgs(coninf, spycon_test)
+    
+    ## plot single CCG
+    #conInf.output.plot_ccg(coninf, spycon_test, 4)
