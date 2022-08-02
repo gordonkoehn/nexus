@@ -152,6 +152,13 @@ class netInspector():
         if (self.power_law_coeffs is not None):
             output += f"Power-Law fit: gamma={self.power_law_coeffs['popt'][1] : 2.3f}\n"
             
+        if (self.out_power_law_coeffs is not None):
+            output += f"Out-Power-Law fit: gamma={self.out_power_law_coeffs['popt'][1] : 2.3f}\n"
+            
+        if (self.in_power_law_coeffs is not None):
+            output += f"In-Power-Law fit: gamma={self.in_power_law_coeffs['popt'][1] : 2.3f}\n"
+           
+            
              
         if (self.small_world_coeffs is not None):
             output += "=Small-worldness="
@@ -183,24 +190,25 @@ class netInspector():
         
         #self.compute_small_world_coeff()
         
-        # calculate theoretical scale free in- /out- degrees
+       
         if (self.graph_type == "scale-free"):
             self.power_law_fit()
+       
+            # calculate theoretical scale free in- /out- degrees
+        #     a = self.genParams['alpha']
+        #     b = self.genParams['beta']
+        #     g = self.genParams['gamma']
+        #     d_out = self.genParams['delta_in']
+        #     d_in = self.genParams['delta_out']
             
-            a = self.genParams['alpha']
-            b = self.genParams['beta']
-            g = self.genParams['gamma']
-            d_out = self.genParams['delta_in']
-            d_in = self.genParams['delta_out']
+        #     c1 = (a + b) / (1 + d_in * (a + g))
+        #     c2 = (b + g) / (1 + d_out *(a + g))
             
-            c1 = (a + b) / (1 + d_in * (a + g))
-            c2 = (b + g) / (1 + d_out *(a + g))
+        #     x_in = 1 + 1/c1
+        #     x_out = 1 + 1/c2 
             
-            x_in = 1 + 1/c1
-            x_out = 1 + 1/c2 
-            
-            self.x_in = x_in
-            self.x_out = x_out
+        #     self.x_in = x_in
+        #     self.x_out = x_out
      
             
   
@@ -300,35 +308,43 @@ class netInspector():
         xdata = np.asarray(list(self.degree_hist.keys()))
         ydata = np.asarray(list(self.degree_hist.values()))
         
-    
-        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
+        try:
+            popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
         
-        power_law_coeffs = {'popt': popt,'pcov': pcov}
+            power_law_coeffs = {'popt': popt,'pcov': pcov}
         
-        self.power_law_coeffs = power_law_coeffs
-        
+            self.power_law_coeffs = power_law_coeffs
+        except RuntimeError as runErr:
+            print("Power-Law fit:")
+            print(runErr)
         
         ## in degrees
         xdata = np.asarray(list(self.in_degree_hist.keys()))
         ydata = np.asarray(list(self.in_degree_hist.values()))
         
-    
-        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
+        try:
+            popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
         
-        power_law_coeffs = {'popt': popt,'pcov': pcov}
+            power_law_coeffs = {'popt': popt,'pcov': pcov}
         
-        self.in_power_law_coeffs = power_law_coeffs
+            self.in_power_law_coeffs = power_law_coeffs
+        except RuntimeError as runErr:
+            print("In-Power-Law fit:")
+            print(runErr)
         
         ## out degrees
         xdata = np.asarray(list(self.out_degree_hist.keys()))
         ydata = np.asarray(list(self.out_degree_hist.values()))
         
-    
-        popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
+        try:
+            popt, pcov = curve_fit(func, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, 4, np.inf]))
         
-        power_law_coeffs = {'popt': popt,'pcov': pcov}
+            power_law_coeffs = {'popt': popt,'pcov': pcov}
         
-        self.out_power_law_coeffs = power_law_coeffs
+            self.out_power_law_coeffs = power_law_coeffs
+        except RuntimeError as runErr:
+            print("Out-Power-Law fit:")
+            print(runErr)
         
         # fig, axes = plt.subplots(1,1, figsize = (7,7))
         

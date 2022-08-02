@@ -58,8 +58,8 @@ if __name__ == '__main__':
     # no of nodes
     n = 100
 
-    scaleFreeGraph = False
-    randomGraph = True
+    scaleFreeGraph = True
+    randomGraph = False
     
     graphType = ""
     
@@ -153,14 +153,12 @@ if __name__ == '__main__':
     print(f"Network dormant: {netActivityStats['dormant']}")
     if netActivityStats['dormant']: 
         raise Exception("Network is dormant - not point to continue")
-        print("Restarting Run")
-        os.system("python core.py")
+      
         
     print(f"Network is recurrent: {netActivityStats['recurrent']}")
     if not netActivityStats['recurrent']: 
         raise Exception("Network is not recurrent - not point to continue")
-        print("Restarting Run")
-        os.system("python core.py")
+        
     
     print(f"Mean firing freq [Hz]: {netActivityStats['m_freq'] : 2.1f}")
     print(f"Mean pairwise-correlation: {netActivityStats['m_pairwise_corr'] : 2.2f}")
@@ -233,7 +231,7 @@ if __name__ == '__main__':
     ## printout graph proberties choosen
     print("\n= Inferred Graph Properties: =\n ")
     # calculate
-    graphType = "inferred"
+    #graphType = "inferred-scale-free"
     genParams = {}
     GInspector_infered = netGen.analyzeNet.netInspector(G_infered_nx, graphType, genParams)
     GInspector_infered.eval_all()
