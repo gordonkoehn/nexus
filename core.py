@@ -105,8 +105,7 @@ def simClasInfer():
     ## plot infered graph 
     nodePosition_G_true = nx.kamada_kawai_layout(G)
     netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph", nodePos = nodePosition_G_true)
-
-    #TODO: plot degree distributions of the true graph with fits if available
+    # plot degree distributions with fits
     GInspector_true.plotDegreeDist(title="Ground Truth Graph")
     
     ##########################################################################
@@ -239,10 +238,9 @@ def simClasInfer():
     GInspector_infered.eval_all()
     print(GInspector_infered)
     
-    #TODO: plot degree distributions of the infered graph with fits if available
+    # plot degree distributions with fits
+    GInspector_infered.plotDegreeDist(title="Inferred Graph")
     
-      
-
     ## plot ROC
     conInf.output.plot_ROC(test_metrics)    
     
