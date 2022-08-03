@@ -18,19 +18,19 @@ if __name__ == '__main__':
     
     
     validSimulationFound = False
-    maxNoTries = 100
+    maxNoTries = 30
     
     
     ## counter
     trialNo = 0
     
     while not validSimulationFound:
-        print("Attempt: " + str(trialNo+1))
+        print("\nAttempt: " + str(trialNo+1))
         
         if (maxNoTries < trialNo):
             raise Exception("Maximal number of trials reached - no valid simulation was found.")
         try:
-            core.simClasInfer(forceAsync=True, forcePhysical = True)
+            core.simClasInfer(forceAsync=True, forcePhysical = False)
             validSimulationFound = True
         except Exception as e:
             print(e)

@@ -75,7 +75,8 @@ def simClasInfer(forceAsync=False, forcePhysical  =False):
     
     graphType = ""
     
-    seed1 = 897
+    seed1 = np.random.randint(1,10000)
+    print(f"graph seed: {seed1}")
     
 
     if scaleFreeGraph: 
@@ -292,13 +293,18 @@ def simClasInfer(forceAsync=False, forcePhysical  =False):
     ##################### CLOSE ALL PLOTS #####################################
     # plt.close('all')
     
-    return test_metrics
+    return {'result':result,
+            'spycon_result':spycon_result,
+            'test_metrics':test_metrics,
+            'spycon_test': spycon_test, 
+            'G':G,
+            'G_infered_nx':G_infered_nx}
 
 ###############################################################################
 ###############################################################################
 if __name__ == '__main__':
     
-    test_metrics = simClasInfer()
+    all_results = simClasInfer()
     
    #  ###########################################################################
    #  ### program start welcome
