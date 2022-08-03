@@ -217,10 +217,13 @@ def simClasInfer():
     print("succesfully infered the functional connectivity")
     
     # get infered graph + including thresholding by the significance value
-    G_infered_nx = conInf.analyser.getInferedNxGraph(spycon_result)
+    G_infered_nx = conInf.analyser.getInferedNxGraph(spycon_result, test_metrics)
   
-    ### get theshold    
-    print(f"Threshold: {spycon_result.threshold : .2f}")
+    # get best threshold
+    bestthreshold = conInf.analyser.getBestThreshold(test_metrics)
+    
+    print(f"Threshold (spycon - not used): {spycon_result.threshold : .2f}")
+    print(f"Threshold (closest to PC): {bestthreshold['threshold'] : .2f}")
     print(f"No of infered edged: {len(G_infered_nx.edges)}")
     
 
@@ -241,8 +244,10 @@ def simClasInfer():
     # plot degree distributions with fits
     GInspector_infered.plotDegreeDist(title="Inferred Graph")
     
+    
     ## plot ROC
-    conInf.output.plot_ROC(test_metrics)    
+    conInf.output.plot_ROC(test_metrics)  
+    
     
     ## plot all CCGs - for true edges
     conInf.output.plot_all_ccgs(coninf, spycon_test)
@@ -254,12 +259,14 @@ def simClasInfer():
     ###########################################################################
     ##################### CLOSE ALL PLOTS #####################################
     # plt.close('all')
+    
+    return test_metrics
 
 ###############################################################################
 ###############################################################################
 if __name__ == '__main__':
     
-    simClasInfer()
+    test_metrics = simClasInfer()
     
    #  ###########################################################################
    #  ### program start welcome

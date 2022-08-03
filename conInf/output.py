@@ -23,6 +23,7 @@ from spycon_tests import load_test, ConnectivityTest
 
 sys.path.append('../tools')
 import tools.adEx_util
+import conInf.analyser
 
 
 def visualization_english(Smoothed_CCG, times1: np.ndarray, times2: np.ndarray,
@@ -189,9 +190,15 @@ def plot_ROC(test_metrics : pd.DataFrame):
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize = (5,5))
     
     fpr, tpr, auc = tuple(test_metrics[['fpr', 'tpr', 'auc']].to_numpy()[0])
-    axes.plot(fpr, tpr)
+    axes.plot(fpr, tpr, color='blue')
     axes.plot([0,1],[0,1], color='gray', linestyle='--')
-    axes.text(.7,.0,'AUC =%.3f' %auc)
-    axes.set(xlabel="False positive rate", ylabel="ETrue positive rate")
+    
+    # get best threshold
+    bestthreshold = conInf.analyser.getBestThreshold(test_metrics)
+    axes.plot(bestthreshold['fpr'],bestthreshold['tpr'], color='orange', marker='.', markersize = 10)
+    #axes.text(.6,.07,'optimal\nthreshold = %.3f' %bestthreshold['threshold'])
+    
+    axes.text(.6,.0,'AUC = %.3f' %auc)
+    axes.set(xlabel="False positive rate", ylabel="True positive rate")
     axes.set_title('Receiver Operating Curve')
   

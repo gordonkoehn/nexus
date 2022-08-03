@@ -28,12 +28,18 @@ import tools.adEx_util
 
 
 
-def getInferedNxGraph(spycon_result : SpikeConnectivityResult):
-    """Get infered networkX Graph from spycon_result with set threshold.
+def getInferedNxGraph(spycon_result : SpikeConnectivityResult, test_metrics):
+    """Get infered networkX Graph from closest to PC threshold.
+    
+    Formerly it used spycon_result.threshold to set a threshold.
+    
+    The function getBestThreshold is used to get the threshold.
     
     Parameters
     ----------
     spycon_result : SpikeConnectivityResult
+    
+    test_metrics
     
         
     Returns
@@ -44,7 +50,7 @@ def getInferedNxGraph(spycon_result : SpikeConnectivityResult):
     G_infered = pd.DataFrame(spycon_result.stats, columns=['id_from', 'id_to', 'weight'])
     G_infered = G_infered.assign(
         isEdge=np.where(
-            G_infered['weight'] > spycon_result.threshold,
+            G_infered['weight'] > getBestThreshold(test_metrics)['threshold'], #spycon_result.threshold,
             True,False))
     #get only significant edges
     G_infered_sig = G_infered[G_infered['isEdge'] == True]
@@ -55,3 +61,36 @@ def getInferedNxGraph(spycon_result : SpikeConnectivityResult):
     G_infered_nx = nx.from_pandas_edgelist(G_infered_sig, source='id_from', target='id_to',create_using=nx.DiGraph())
     
     return G_infered_nx
+
+
+def getBestThreshold(test_metrics):
+    """
+    Calculate best threshold.
+    
+    Point on ROC curve closest to the perfect classifier  (FP, TP)=  (0,1).
+    
+    Parameters
+    ----------
+    spycon_result : SpikeConnectivityResult
+    
+        
+    Returns
+    -------
+    bestPoint :  dict
+            bestPoint['threshold'] = threshold id in test_metrics
+            bestPoint['fpr'] = list of flase positive rates
+            bestPoint['tpr'] = list of true positive rates
+    
+    """
+    # unpack testmetrics
+    fpr, tpr, auc, thresholds = tuple(test_metrics[['fpr', 'tpr', 'auc', 'thresholds']].to_numpy()[0])
+    
+    idx_bestThreshold = np.argmin(np.sqrt((fpr**2) +((1-tpr)**2)))
+    
+    bestPoint = dict()
+    bestPoint['threshold'] = thresholds[idx_bestThreshold]
+    bestPoint['fpr'] = fpr[idx_bestThreshold]
+    bestPoint['tpr'] = tpr[idx_bestThreshold]
+    
+    return bestPoint
+    
