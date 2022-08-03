@@ -91,6 +91,10 @@ class netInspector():
         self.in_power_law_coeffs = None
         self.small_world_coeffs = None
         self.totalEdges = None
+        
+        self.undirectedDeg_normal_fit =  None
+        self.InDeg_normal_fit = None
+        self.OutDeg_normal_fit = None
     
 
     def __str__(self):
@@ -193,6 +197,10 @@ class netInspector():
        
         if (self.graph_type == "scale-free"):
             self.power_law_fit()
+            
+            
+        if (self.graph_type == "random"):
+            self.gaussian_fit()
        
             # calculate theoretical scale free in- /out- degrees
         #     a = self.genParams['alpha']
@@ -209,9 +217,7 @@ class netInspector():
             
         #     self.x_in = x_in
         #     self.x_out = x_out
-     
-            
-  
+
 
     def degree_seq_hist(self): 
         """Calculate and self-assigns degree sequence and degree histrogram .
@@ -422,10 +428,7 @@ class netInspector():
 
         ax[1].text(0.05, 0.95, self.__str__() , transform=ax[1].transAxes, fontsize=10, verticalalignment='top', bbox=props)
         
-        
-        
-        
-        
+  
         if (self.graph_type == "scale-free"):
             #### emtpy pane
             
@@ -532,7 +535,180 @@ class netInspector():
             
    
     
+    def plotDegreeDist(self, title = None):
+        """Create sensible selection of degree distribution plots.
+        
+        Parameters
+        ----------
+        self.G : nx.graph.Graph
+        graph to analyze
+        
+        title : str
+            how to title to whole figure
+         
+        Returns
+        -------
+        plot
+        """ 
+        # TODO: seperate plotting from plotting fit - can save half of the code
+        fig, axes = plt.subplots(nrows=1, ncols=3, figsize = (10,5))
+        ax = axes.flatten()
+        plt.legend(fontsize=10)
+        
+        if title is not None:
+            fig.suptitle(title, fontsize=16)
+            
+        if (self.graph_type == "scale-free"):
+            
+            legend_fs = 8
+            
+            ####################### plot node degree
+            axis = 0
+            ax[axis].set_title("Undirected Node Degree ")
+            xdata = np.asarray(list(self.degree_hist.keys()))
+            ydata = np.asarray(list(self.degree_hist.values()))
+            ax[axis].plot(xdata, ydata, '.', markersize=10)
+            popt = self.power_law_coeffs['popt'] 
+            xSpace = np.linspace(min(xdata), max(xdata), 100)
+            ax[axis].plot(xSpace, exp_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.2f * e^{-%5.2f} + %5.2f$' % tuple(popt))
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+            ax[axis].legend(fontsize=legend_fs)
+            
+            ###############  plot in node degree
+            axis = 1
+            ax[axis].set_title("In-Node Degree ")
+            xdata = np.asarray(list(self.in_degree_hist.keys()))
+            ydata = np.asarray(list(self.in_degree_hist.values()))
+            ax[axis].plot(xdata, ydata, '.', markersize=10)
+            popt = self.in_power_law_coeffs['popt'] 
+            xSpace = np.linspace(min(xdata), max(xdata), 100)
+            ax[axis].plot(xSpace, exp_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.2f * e^{-%5.2f} + %5.2f$' % tuple(popt))
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+            ax[axis].legend(fontsize=legend_fs)
+    
+    
+            ################## plot in node degree
+            axis = 2
+            ax[axis].set_title("Out-Node Degree ")
+            xdata = np.asarray(list(self.out_degree_hist.keys()))
+            ydata = np.asarray(list(self.out_degree_hist.values()))
+            ax[axis].plot(xdata, ydata, '.', markersize=10)
+            popt = self.out_power_law_coeffs['popt'] 
+            xSpace = np.linspace(min(xdata), max(xdata), 100)
+            ax[axis].plot(xSpace, exp_fn(xSpace, *popt), '-', label= r'fit:  $y=%5.2f * e^{-%5.2f} + %5.2f$' % tuple(popt))
+            ax[axis].set(xlabel="node degree", ylabel="frequency")
+            ax[axis].legend(fontsize=legend_fs)
+            
+      
+        if (self.graph_type == "random"):
+       
+           legend_fs = 8
+           
+           ####################### plot node degree
+           axis = 0
+           ax[axis].set_title("Undirected Node Degree ")
+           xdata = np.asarray(list(self.degree_hist.keys()))
+           ydata = np.asarray(list(self.degree_hist.values()))
+           ax[axis].plot(xdata, ydata, '.', markersize=10)
+           if self.undirectedDeg_normal_fit is not None: 
+               popt = self.undirectedDeg_normal_fit['popt'] 
+               xSpace = np.linspace(min(xdata), max(xdata), 100)
+               ax[axis].plot(xSpace, gaussian_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.1f * exp\frac{(x-%5.1f)^2}{(2*%5.1f^2)} $' % tuple(popt))
+           
+           ax[axis].set(xlabel="node degree", ylabel="frequency")
+           ax[axis].legend(fontsize=legend_fs)
+           
+           ###############  plot in node degree
+           axis = 1
+           ax[axis].set_title("In-Node Degree ")
+           xdata = np.asarray(list(self.in_degree_hist.keys()))
+           ydata = np.asarray(list(self.in_degree_hist.values()))
+           ax[axis].plot(xdata, ydata, '.', markersize=10)
+           if self.InDeg_normal_fit is not None: 
+               popt = self.InDeg_normal_fit['popt'] 
+               xSpace = np.linspace(min(xdata), max(xdata), 100)
+               ax[axis].plot(xSpace, gaussian_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.1f * exp\frac{(x-%5.1f)^2}{(2*%5.1f^2)} $' % tuple(popt))
+           
+           ax[axis].set(xlabel="node degree", ylabel="frequency")
+           ax[axis].legend(fontsize=legend_fs)
+   
+   
+           ################## plot in node degree
+           axis = 2
+           ax[axis].set_title("Out-Node Degree ")
+           xdata = np.asarray(list(self.out_degree_hist.keys()))
+           ydata = np.asarray(list(self.out_degree_hist.values()))
+           ax[axis].plot(xdata, ydata, '.', markersize=10)
+           if self.OutDeg_normal_fit is not None: 
+               popt = self.OutDeg_normal_fit['popt'] 
+               xSpace = np.linspace(min(xdata), max(xdata), 100)
+               ax[axis].plot(xSpace, gaussian_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.1f * exp\frac{(x-%5.1f)^2}{(2*%5.1f^2)} $' % tuple(popt))
+           
+           ax[axis].set(xlabel="node degree", ylabel="frequency")
+           ax[axis].legend(fontsize=legend_fs)
+           
+         
+            
+    def gaussian_fit(self):
+        """Calculate gaussian fit of in-/out- and all-degrees by linear regression."""
+        ## all connections
+        xdata = np.asarray(list(self.degree_hist.keys()))
+        ydata = np.asarray(list(self.degree_hist.values()))
+        
+        try:
+            popt, pcov = curve_fit(gaussian_fn, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, np.inf, np.inf]))
+        
+            self.undirectedDeg_normal_fit = {'popt': popt,'pcov': pcov}
+        
+        except RuntimeError as runErr:
+            print("Undirected Degree Distribution fit:")
+            print(runErr)
+        
+        ## in degrees
+        xdata = np.asarray(list(self.in_degree_hist.keys()))
+        ydata = np.asarray(list(self.in_degree_hist.values()))
+        
+        try:
+            popt, pcov = curve_fit(gaussian_fn, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, np.inf, np.inf]))
+        
+            self.InDeg_normal_fit = {'popt': popt,'pcov': pcov}
+        
+        except RuntimeError as runErr:
+            print("In-Degree Distribution fit:")
+            print(runErr)
+        
+        ## out degrees
+        xdata = np.asarray(list(self.out_degree_hist.keys()))
+        ydata = np.asarray(list(self.out_degree_hist.values()))
+        
+        try:
+            popt, pcov = curve_fit(gaussian_fn, xdata, ydata, bounds=([-np.inf, 0, -np.inf], [+np.inf, np.inf, np.inf]))
+        
+            self.OutDeg_normal_fit = {'popt': popt,'pcov': pcov}
+        
+        except RuntimeError as runErr:
+            print("Out-Degree Distribution fit:")
+            print(runErr)
+        
+        # fig, axes = plt.subplots(1,1, figsize = (7,7))
+        
+        # plt.plot(xdata, ydata, '.', label='data')
+        
+        # xSpace = np.linspace(min(xdata), max(xdata), 100)
+        
+        # plt.plot(xSpace, func(xSpace, *popt), '-', label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
+        
+        # plt.xlabel('x - node degree')
+        # plt.ylabel('y - frequency')
+        # plt.legend()
+
         
         
-        
+def exp_fn(x, a, b, c):
+    """Calculate exponential function."""
+    return a * np.exp(-b * x) + c
+
+def gaussian_fn(x,a,b,c):
+    """Calculate a gaussian function."""
+    return a * np.exp(-np.power(x-b,2)/(2*np.power(c,2)))
     

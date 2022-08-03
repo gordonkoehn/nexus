@@ -22,7 +22,7 @@ from sci_sccg import Smoothed_CCG
 from spycon_tests import load_test, ConnectivityTest
 
 sys.path.append('../tools')
-import adEx_util as  adEx_util
+import tools.adEx_util
 
 
 def visualization_english(Smoothed_CCG, times1: np.ndarray, times2: np.ndarray,

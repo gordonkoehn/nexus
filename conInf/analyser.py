@@ -23,7 +23,7 @@ from spycon_tests import load_test, ConnectivityTest
 from spycon_result import SpikeConnectivityResult
 
 sys.path.append('../tools')
-import adEx_util as  adEx_util
+import tools.adEx_util
 
 
 

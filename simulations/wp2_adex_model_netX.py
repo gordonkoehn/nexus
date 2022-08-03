@@ -376,13 +376,12 @@ if __name__ == '__main__':
     
     # generate graph
     #G = netGen.genNet.random_net() 
-    G = netGen.genNet.scale_free_net(a=0.26, b=0.54, g=0.20)
+    G = netGen.genNet.scale_free_net(a=0.16, b=0.54, g=0.30)
     
     # generate synapses
     # get synapses    
-    S, N = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = False)
+    S, N = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = True)
     
-    print("")
     
     params = dict()
     params['sim_time'] = float(10)
