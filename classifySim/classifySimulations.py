@@ -395,6 +395,8 @@ def classifyResult(result):
     stats['m_freq'] = m_freq
     stats['m_cv'] = (m_cv)
     
+    stats['physical'] =  (stats['m_freq'] < 30) and (stats['m_freq'] > 1)  # below 30 hz and larger 1Hz
+    
     try:
         # get pairwise correlations
         binned_spiketrains = getBinnedSpiketrains(result)

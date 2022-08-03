@@ -38,9 +38,22 @@ warnings.filterwarnings("ignore")
 
 
 
-def simClasInfer():
-    """Run Simulation Classifcation and Connectivity Inference."""
+def simClasInfer(forceAsync=False, forcePhysical  =False):
+    """
+    Run Simulation Classifcation and Connectivity Inference.
+    
+    Parameters
+    ----------
+    forceAsync = False : boolean
+        Restart Simulation if not asynchronous
      
+    forcePhysical = False : boolean
+        Restart Simulation if not physical mean frining freq belowe 30 Hz and more than 1 Hz
+           
+    Returns
+    -------
+
+    """
     ###########################################################################
     ### program start welcome
     print("\n")
@@ -62,7 +75,7 @@ def simClasInfer():
     
     graphType = ""
     
-    seed1 = 576
+    seed1 = 897
     
 
     if scaleFreeGraph: 
@@ -103,10 +116,10 @@ def simClasInfer():
         
     ### Plot ###
     ## plot infered graph 
-    nodePosition_G_true = nx.kamada_kawai_layout(G)
-    netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph", nodePos = nodePosition_G_true)
-    # plot degree distributions with fits
-    GInspector_true.plotDegreeDist(title="Ground Truth Graph")
+    # nodePosition_G_true = nx.kamada_kawai_layout(G)
+    # netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph", nodePos = nodePosition_G_true)
+    # # plot degree distributions with fits
+    # GInspector_true.plotDegreeDist(title="Ground Truth Graph")
     
     ##########################################################################
     ######### Run Simulation
@@ -158,14 +171,32 @@ def simClasInfer():
         
     print(f"Network is recurrent: {netActivityStats['recurrent']}")
     if not netActivityStats['recurrent']: 
-        raise Exception("Network is not recurrent - not point to continue")
+        raise Exception("Network activity is not recurrent - not point to continue")
         
     
     print(f"Mean firing freq [Hz]: {netActivityStats['m_freq'] : 2.1f}")
+    
+    print(f"Physical activity: {netActivityStats['physical']}")
+    if forcePhysical:
+        if (not netActivityStats['physical']):
+            raise Exception("Force Physical Activity: Network activity is not physical\n(mean firing freq is not 1-30Hz.)")
+    
+    
     print(f"Mean pairwise-correlation: {netActivityStats['m_pairwise_corr'] : 2.2f}")
     print(f"Mean coefficient of variation: {netActivityStats['m_cv'] : 2.1f}")
     print(f"Asynchronous: {netActivityStats['asynchronous']}")
+    if forceAsync:
+        if (not netActivityStats['asynchronous']):
+            raise Exception("Force Asynchronous Activity: Network activity is not asynchronous.")
+    
     ### Plot ###
+  
+    ## plot infered graph 
+    nodePosition_G_true = nx.kamada_kawai_layout(G)
+    netGen.analyzeNet.draw_graph( G, title = "Ground Truth Graph", nodePos = nodePosition_G_true)
+    # plot degree distributions with fits
+    GInspector_true.plotDegreeDist(title="Ground Truth Graph")
+    
     ## Rasterplot
     classifySim.plotClassify.getRasterplot(result)
     ## Mean Firing Freq
@@ -224,6 +255,7 @@ def simClasInfer():
     
     print(f"Threshold (spycon - not used): {spycon_result.threshold : .2f}")
     print(f"Threshold (closest to PC): {bestthreshold['threshold'] : .2f}")
+    print(f"This threshold leads to:\ntpr={bestthreshold['tpr'] : .2f}\nfpr={bestthreshold['fpr'] : .2f}")
     print(f"No of infered edged: {len(G_infered_nx.edges)}")
     
 
