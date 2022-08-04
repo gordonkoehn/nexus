@@ -40,7 +40,7 @@ def getRasterplot(result):
     plt.title('Raster Plot', fontsize=15)
     plt.scatter( in_time_sub, in_idx_sub, color='red',s=5,label="FS")
     plt.scatter(  ex_time_sub, ex_idx_sub, color='green',s=5,label="RS")
-    plt.legend(loc='best', fontsize=15)
+    plt.legend(loc='lower right', fontsize=15)
     plt.xlabel('Time [ms]', fontsize=15)
     plt.ylabel('Neuron Index', fontsize=15) 
     

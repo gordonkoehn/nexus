@@ -551,7 +551,7 @@ class netInspector():
         plot
         """ 
         # TODO: seperate plotting from plotting fit - can save half of the code
-        fig, axes = plt.subplots(nrows=1, ncols=3, figsize = (10,5))
+        fig, axes = plt.subplots(nrows=1, ncols=3, figsize = (11,5))
         ax = axes.flatten()
         plt.legend(fontsize=10)
         
@@ -572,7 +572,7 @@ class netInspector():
             xSpace = np.linspace(min(xdata), max(xdata), 100)
             ax[axis].plot(xSpace, exp_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.2f * e^{-%5.2f} + %5.2f$' % tuple(popt))
             ax[axis].set(xlabel="node degree", ylabel="frequency")
-            ax[axis].legend(fontsize=legend_fs)
+            ax[axis].legend(fontsize=legend_fs, loc = "upper right")
             
             ###############  plot in node degree
             axis = 1
@@ -584,7 +584,7 @@ class netInspector():
             xSpace = np.linspace(min(xdata), max(xdata), 100)
             ax[axis].plot(xSpace, exp_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.2f * e^{-%5.2f} + %5.2f$' % tuple(popt))
             ax[axis].set(xlabel="node degree", ylabel="frequency")
-            ax[axis].legend(fontsize=legend_fs)
+            ax[axis].legend(fontsize=legend_fs, loc = "upper right")
     
     
             ################## plot in node degree
@@ -597,7 +597,7 @@ class netInspector():
             xSpace = np.linspace(min(xdata), max(xdata), 100)
             ax[axis].plot(xSpace, exp_fn(xSpace, *popt), '-', label= r'fit:  $y=%5.2f * e^{-%5.2f} + %5.2f$' % tuple(popt))
             ax[axis].set(xlabel="node degree", ylabel="frequency")
-            ax[axis].legend(fontsize=legend_fs)
+            ax[axis].legend(fontsize=legend_fs, loc = "upper right")
             
       
         if (self.graph_type == "random"):
@@ -616,7 +616,7 @@ class netInspector():
                ax[axis].plot(xSpace, gaussian_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.1f * exp\frac{(x-%5.1f)^2}{(2*%5.1f^2)} $' % tuple(popt))
            
            ax[axis].set(xlabel="node degree", ylabel="frequency")
-           ax[axis].legend(fontsize=legend_fs)
+           ax[axis].legend(fontsize=legend_fs, loc = "upper right")
            
            ###############  plot in node degree
            axis = 1
@@ -630,7 +630,7 @@ class netInspector():
                ax[axis].plot(xSpace, gaussian_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.1f * exp\frac{(x-%5.1f)^2}{(2*%5.1f^2)} $' % tuple(popt))
            
            ax[axis].set(xlabel="node degree", ylabel="frequency")
-           ax[axis].legend(fontsize=legend_fs)
+           ax[axis].legend(fontsize=legend_fs,loc = "upper right")
    
    
            ################## plot in node degree
@@ -645,8 +645,8 @@ class netInspector():
                ax[axis].plot(xSpace, gaussian_fn(xSpace, *popt), '-', label=r'fit:  $y=%5.1f * exp\frac{(x-%5.1f)^2}{(2*%5.1f^2)} $' % tuple(popt))
            
            ax[axis].set(xlabel="node degree", ylabel="frequency")
-           ax[axis].legend(fontsize=legend_fs)
-           
+           ax[axis].legend(fontsize=legend_fs, loc = "upper right")
+          
          
             
     def gaussian_fit(self):
