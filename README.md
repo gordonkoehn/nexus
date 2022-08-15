@@ -27,37 +27,26 @@ core_runner.py - allows to force asynchonous/synchonous or physical behaiour by 
 - tools : /spycon package (provided by Christian donner) + helper scripts
 
 ## Abstract of Project 
-In the pursuit to comprehend the enigmatic nature of our brain, understand-
-ing operational principles of neural circuits is the main goal. The defining
-characteristic of any circuit is its connectivity. Yet, investigating the physical
-neuron to neuron connections in the living brain on a large scale is presently
-still infeasible. Thus, other methods to learn about the connectivity of neu-
-ronal circuits are being explored, as for instance via the neural activity. The
-dawn of high-density, multi-electrode implants gives hope to record large-scale
-neuronal activity on the single neuron level in next decades.
-Given neuronal activity recordings, the functional connectivity of a network
-may be inferred from statistical correlation. The term functional connectiv-
-ity separates the connectivity found by correlation from the physical, called
-structural connectivity. It may already contain the operational principles of
+In the pursuit to comprehend the enigmatic nature of our brain, understanding operational principles of neural circuits is the main goal. The defining
+characteristic of any circuit is its connectivity. Yet, investigating the physical neuron to neuron connections in the living brain on a large scale is presently still infeasible. Thus, other methods to learn about the connectivity of neuronal circuits are being explored, as for instance via the neural activity. The dawn of high-density, multi-electrode implants gives hope to record large-scale neuronal activity on the single neuron level in next decades.
+
+Given neuronal activity recordings, the functional connectivity of a network may be inferred from statistical correlation. The term functional connectivity separates the connectivity found by correlation from the physical, called structural connectivity. It may already contain the operational principles of
 our brain we seek to find.
+
 Here, we evaluate the performance of a widely used functional connectivity
-inference method by English et al. [2017][1] on small scale networks. We gen-
-erate neural activity in silico on a known random network structure, to then
+inference method by English et al. [2017][1] on small scale networks. We generate neural activity in silico on a known random network structure, to then
 evaluate the performance of the algorithm against it.
+
 The model used to simulate neurons is the prominent adaptive-exponential
-integrate and fire (aEIF) model by Brette et al. [2007][2], allowing to capture the
-fundamental exponential and adapting behaviour of the action potential.
-The performance of the connectivity inference algorithm is evaluated at the
-extrema of synchrony of sensible network activity. Therefore an extensive
-parametric study in the adaption and conductance space of the used neuron
-model was conducted, successfully identifying regimes of a- and synchronous
-activity.
-Particular cases of very synchronous network activity lead to a poor perfor-
-mance of the inference algorithm, yet this study fails to make quantitative
+integrate and fire (aEIF) model by Brette et al. [2007][2], allowing to capture the fundamental exponential and adapting behaviour of the action potential.
+
+The performance of the connectivity inference algorithm is evaluated at the extrema of synchrony of sensible network activity. Therefore an extensive parametric study in the adaption and conductance space of the used neuron
+model was conducted, successfully identifying regimes of a- and synchronous activity.
+
+Particular cases of very synchronous network activity lead to a poor performance of the inference algorithm, yet this study fails to make quantitative
 statements aimed for.
-Further, an attempt to explore network activity and performance of the algo-
-rithm at more neuro-physiological network topologies, namely scale-free net-
-works is presented.
+
+Further, an attempt to explore network activity and performance of the algorithm at more neuro-physiological network topologies, namely scale-free networks is presented.
 
 
 ## Full Report
