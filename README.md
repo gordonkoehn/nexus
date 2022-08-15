@@ -8,10 +8,10 @@ This code was written as part of a semester project at ETH Zürich / Bio Engenee
 
 ### Acknowledgements of Code
 This project built upon the works other of members of the reseach group at ETH, who generously provided their brainworks/code:
-- Kim Taehoon 
+- Kim Taehoon (@arahangua)
     - /simulations/wp2*.py  -> originals & variations of provided scripts
     - /conInf -> structure of analyis derived from his projects
-- Christian donner 
+- Christian donner (@christiando)
     - /tools/spyCon -> package written for functional connectivity inferrence 
 
 ## Structure of Projects
