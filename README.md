@@ -7,10 +7,10 @@ integrate and fire (aEIF) neuron model by Brette et al. [2007][2] on small-scale
 This code was written as part of a semester project at ETH Zürich / Bio Engeneering Laboratory for my MSc Biotechnolgoy degree. The project was under Kim Taehoon's (@arahangua) caring supervision. 
 
 ### Acknowledgements of Code
-This project built upon the works other members of the reseach group at ETH, who generously provided their brainworks/code:
+This project built upon the works other of members of the reseach group at ETH, who generously provided their brainworks/code:
 - Kim Taehoon 
     - /simulations/wp2*.py  -> originals & variations of provided scripts
-    - /conInf -> structure of analyiss derived from his projects
+    - /conInf -> structure of analyis derived from his projects
 - Christian donner 
     - /tools/spyCon -> package written for functional connectivity inferrence 
 
