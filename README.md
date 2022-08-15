@@ -1,6 +1,6 @@
 # nexus
 Investigating the performance of the cross-correlation method by English et al. [2017][1] of inferring functional connectivity in adaptive-exponential
-integrate and fire (aEIF) neuron model by Brette et al. [2007][2] on small-scale neuronal networks of different activity patterns (synchronous & regular // asynchonous & regular) and topologies (random / scale-free.) 
+integrate and fire (aEIF) neuron model by Brette et al. [2007][2] on small-scale neuronal networks of different activity patterns (synchronous & regular / asynchonous & regular) and topologies (random / scale-free.) 
 
 ## Acknowledgements
 
@@ -83,3 +83,8 @@ if list of files it to long to delete by "rm *.lock" run
 <bash>
 find . -name "*.lock" -print0 | xargs -0 rm
 </bash>
+
+## References
+[1] English, D. F., McKenzie, S., Evans, T., Kim, K., Yoon, E., & Buzsáki, G. (2017). Pyramidal Cell-Interneuron Circuit Architecture and Dynamics in Hippocampal Networks. Neuron, 96(2), 505-520.e7. https://doi.org/10.1016/j.neuron.2017.09.033
+
+[1] Brette, R., & Gerstner, W. (2005). Adaptive exponential integrate-and-fire model as an effective description of neuronal activity. Journal of Neurophysiology, 94(5), 3637–3642. https://doi.org/10.1152/jn.00686.2005
