@@ -11,6 +11,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 import scipy
+from scipy import stats
 
 ###############################################################################
 ###############################################################################
@@ -82,5 +83,27 @@ if __name__ == '__main__':
     ax7.set_xlabel('Activity Type')
     ax7.set_ylabel('ROC: Area Under Curve')
     ax7.grid()
+    
+    
+    
+    
+    
+    
+    
+    #### per neuron group
+    fig8, ax8 = plt.subplots(figsize = (5,5))
+    
+    #data = np.concatenate((rates_Hz_ex, rates_Hz_in))
+    green_diamond = dict(markerfacecolor='g', marker='D')
+    data = [df_sync['AUC'], df_async['AUC']]
+    #ax8.set_title('Mean Coefficient Of Variation')
+    bp = ax8.violinplot(data, showmeans=True)
+
+    ax8.set_xticks([1, 2])
+    ax8.set_xticklabels(("synchronous", "asynchronous"), size=10)
+    
+    ax8.set_xlabel('Activity Type')
+    ax8.set_ylabel('ROC: Area Under Curve')
+    ax8.grid()
     
     

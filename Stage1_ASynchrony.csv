@@ -23,3 +23,9 @@ run #,a,b,asynchronous,m_freq,m_corr,m_cv,AUC,Full Analytics,Plots Saved,Plots G
 20,5,14,FALSE,129.7,0.23,0.2,0.803,runs/20,TRUE,TRUE,TRUE,
 21,5,14,FALSE,100.6,0.13,0.5,0.588,runs/21,TRUE,TRUE,TRUE,looks great
 22,5,14,FALSE,120.1,0.2,0.4,0.852,runs/22,TRUE,TRUE,TRUE,
+23,5,14,FALSE,66.2,0.18,2.1,0.649,runs/23,FALSE,,,
+24,5,14,FALSE,94.1,0.14,0.8,0.759,,FALSE,,,
+25,28,21,TRUE,58.9,0.09,2.5,0.642,runs/24,FALSE,,,
+26,28,21,TRUE,39.1,0.09,1.5,0.754,runs/25,FALSE,,,
+,,,,,,,,,,,,
+,,,,85.05625,0.14,0.96875,,,,,,
