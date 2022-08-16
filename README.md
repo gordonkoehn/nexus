@@ -11,7 +11,7 @@ This project built upon the works other of members of the reseach group at ETH, 
 - Kim Taehoon (@arahangua)
     - /simulations/wp2*.py  -> originals & variations of provided scripts
     - /conInf -> structure of analyis derived from his projects
-- Christian donner (@christiando)
+- Christian Donner (@christiando)
     - /tools/spyCon -> package written for functional connectivity inferrence 
 
 ## Structure of Projects
