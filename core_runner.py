@@ -30,7 +30,7 @@ if __name__ == '__main__':
         if (maxNoTries < trialNo):
             raise Exception("Maximal number of trials reached - no valid simulation was found.")
         try:
-            core.simClasInfer(forceAsync=True, forcePhysical = False)
+            core.simClasInfer(forceAsync=False, forcePhysical = False)
             validSimulationFound = True
         except Exception as e:
             print(e)

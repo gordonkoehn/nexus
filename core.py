@@ -82,9 +82,9 @@ def simClasInfer(forceAsync=False, forcePhysical  =False):
     if scaleFreeGraph: 
         # make a scale free graph of defined parameters
     
-        a=0.26 #0.41    # Prob of adding new node with connection --> existing node
-        b=0.54          # Prob of adding edge from existing node to existing node
-        g=0.20 #0.05     # Prob of adding new node with connection <-- existing node
+        a=0.1 #0.41    # Prob of adding new node with connection --> existing node
+        b=0.8          # Prob of adding edge from existing node to existing node
+        g=0.1 #0.05     # Prob of adding new node with connection <-- existing node
         
         d_in = 0.2
         d_out = 0
@@ -128,17 +128,18 @@ def simClasInfer(forceAsync=False, forcePhysical  =False):
     
     # generate synapses
     # get synapses    
-    S, N = netGen.genNet.classifySynapses(G=G, inhibitoryHubs = False)
+    NE=int(n*4./5.); NI=int(n/5.)
+    S, N = netGen.genNet.classifySynapses(G=G,NI=NI, NE=NE, inhibitoryHubs = False)
     
     
     params = dict()
     params['sim_time'] = float(10)
-    params['a'] = float(28)
-    params['b'] = float(21)
-    params['N'] = int(100)
+    params['a'] = float(1)
+    params['b'] = float(5)
+    params['N'] = int(n)
     #conductances
-    params['ge']=float(40)
-    params['gi']=float(60)
+    params['ge']=float(6)
+    params['gi']=float(67)
     #connection probabilities
     params['synapses'] = S
     params['neurons'] = N
