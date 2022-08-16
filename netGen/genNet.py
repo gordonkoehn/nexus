@@ -95,7 +95,7 @@ def classifySynapses(G, NI=20, NE=80, inhibitoryHubs=True):
         id_inhibitory_neurons = neurons['degree'].nlargest(NI).index
     else:
         # get random indixes for inhibitory
-        id_inhibitory_neurons = random.sample(range(0, NI+NE), 20)
+        id_inhibitory_neurons = random.sample(range(0, NI+NE), NI)
     
     #set all to excitatory by default
     neurons['type'] = "excitatory"
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     n = 100
 
     scaleFreeGraph = True
-    randomGraph = True
+    randomGraph = False
     
     graphType = ""
     
@@ -195,9 +195,9 @@ if __name__ == '__main__':
     if scaleFreeGraph: 
         # make a scale free graph of defined parameters
     
-        a=0.26 #0.41    # Prob of adding new node with connection --> existing node
-        b=0.54          # Prob of adding edge from existing node to existing node
-        g=0.20 #0.05     # Prob of adding new node with connection <-- existing node
+        a=0.1 #0.41    # Prob of adding new node with connection --> existing node
+        b=0.8          # Prob of adding edge from existing node to existing node
+        g=0.1 #0.05     # Prob of adding new node with connection <-- existing node
         
         d_in = 0.2
         d_out = 0
