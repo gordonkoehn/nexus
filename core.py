@@ -134,12 +134,12 @@ def simClasInfer(forceAsync=False, forcePhysical  =False):
     
     params = dict()
     params['sim_time'] = float(10)
-    params['a'] = float(1)
-    params['b'] = float(5)
+    params['a'] = float(28)
+    params['b'] = float(21)
     params['N'] = int(n)
     #conductances
-    params['ge']=float(6)
-    params['gi']=float(67)
+    params['ge']=float(40)
+    params['gi']=float(80)
     #connection probabilities
     params['synapses'] = S
     params['neurons'] = N
