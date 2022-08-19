@@ -10,7 +10,7 @@ This code was written as part of a semester project at ETH Zürich / Bio Engenee
 This project built upon the works other of members of the reseach group at ETH, who generously provided their brainworks/code:
 - Kim Taehoon (@arahangua)
     - /simulations/wp2*.py  -> originals & variations of provided scripts
-    - /conInf -> structure of analyis derived from his projects
+    - /conInf -> structure of analysis derived from his projects
 - Christian Donner (@christiando)
     - /tools/spyCon -> package written for functional connectivity inferrence 
 
