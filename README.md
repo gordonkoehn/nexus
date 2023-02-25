@@ -4,7 +4,7 @@ integrate and fire (aEIF) neuron model by Brette et al. [2007][2] on small-scale
 
 ## Acknowledgements
 
-This code was written as part of a semester project at ETH Zürich / Bio Engeneering Laboratory for my MSc Biotechnolgoy degree. The project was under Kim Taehoon's (@arahangua) caring supervision. 
+This code was written as part of a semester project at ETH Zürich / Bio Engeneering Laboratory for my MSc Biotechnolgoy degree. The project was under Kim Taehoon's (@arahangua) thoughtful supervision. 
 
 ### Acknowledgements of Code
 This project built upon the works other of members of the reseach group at ETH, who generously provided their brainworks/code:
