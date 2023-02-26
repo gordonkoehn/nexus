@@ -76,4 +76,4 @@ find . -name "*.lock" -print0 | xargs -0 rm
 ## References
 [1] English, D. F., McKenzie, S., Evans, T., Kim, K., Yoon, E., & Buzsáki, G. (2017). Pyramidal Cell-Interneuron Circuit Architecture and Dynamics in Hippocampal Networks. Neuron, 96(2), 505-520.e7. https://doi.org/10.1016/j.neuron.2017.09.033
 
-[1] Brette, R., & Gerstner, W. (2005). Adaptive exponential integrate-and-fire model as an effective description of neuronal activity. Journal of Neurophysiology, 94(5), 3637–3642. https://doi.org/10.1152/jn.00686.2005
+[2] Brette, R., & Gerstner, W. (2005). Adaptive exponential integrate-and-fire model as an effective description of neuronal activity. Journal of Neurophysiology, 94(5), 3637–3642. https://doi.org/10.1152/jn.00686.2005
